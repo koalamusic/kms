@@ -222,6 +222,54 @@ class File
     }
 
     /**
+     * Check if the given file is likely a compilation.
+     *
+     * @param array $info     The extracted tags to sync
+     * @param int   $artistId The artist id found from the tags
+     *
+     * @return bool The compilation likelyness flag
+     */
+    private function isLikelyCompilation($info, $artist)
+    {
+        // Check if we need to set up the compilation flag by ourselves
+        if (!isset($info['album'])) {
+            return false;
+        }
+
+        $albumFromName = Album::getFromName($info['album']);
+
+        if ($albumFromName !== null && $albumFromName->is_compilation !== 1 && $albumFromName->artist_id != $artist->id
+            && Song::scopeInDirectory(Song::where('album_id', $albumFromName->id), pathinfo($this->path, PATHINFO_DIRNAME))->first() !== null) {
+            // It seems the compilation flag should be set
+            // Also update the previous album's artist to various artist
+            $albumFromName->update(['is_compilation' => '1', 'artist_id' => Artist::VARIOUS_ID]);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if a ".virtual-album" file exists in the current folder.
+     * In that case, the current "album" tag (if it exists) is replaced by the name of the folder
+     * This allows to store many "unrelated" song in a folder and they'll appear as if they were
+     * part of a simple album, and not clutter the album list with numerous "1 song" albums.
+     *
+     * @param array $info     The extracted tags to sync
+     */
+    private function checkVirtualAlbum(&$info)
+    {
+        $folderName = pathinfo($this->path, PATHINFO_DIRNAME);
+        // Check if a virtual album file exists in the current song's folder
+        if (!file_exists($folderName.'/.virtual-album')) {
+            return;
+        }
+
+        $info['album'] = basename($folderName);
+    }
+
+    /**
      * Sync the song with all available media info against the database.
      *
      * @param array $tags  The (selective) tags to sync (if the song exists)
@@ -256,6 +304,9 @@ class File
             // A sample command could be: ./artisan koel:sync --force --tags=artist,album,lyrics
             // We cater for these tags by removing those not specified.
 
+            if(isset($info['albumartist']))
+                $albumArtist = isset($info['albumartist']) ? Artist::get($info['albumartist']) : $this->song->album->artist;
+
             // There's a special case with 'album' though.
             // If 'compilation' tag is specified, 'album' must be counted in as well.
             // But if 'album' isn't specified, we don't want to update normal albums.
@@ -271,17 +322,20 @@ class File
             // If the "artist" tag is specified, use it.
             // Otherwise, re-use the existing model value.
             $artist = isset($info['artist']) ? Artist::get($info['artist']) : $this->song->album->artist;
-            if(isset($info['albumartist']))
-                $albumartist = isset($info['albumartist']) ? Artist::get($info['albumartist']) : $this->song->album->artist;
 
             $isCompilation = (bool) array_get($info, 'compilation');
+
+            // Check if we need to set up the compilation flag by ourselves
+            if (!$isCompilation) {
+                $isCompilation = $this->isLikelyCompilation($info, (isset($albumArtist) ? $albumArtist : $artist));
+            }
 
             // If the "album" tag is specified, use it.
             // Otherwise, re-use the existing model value.
             if (isset($info['album'])) {
                 $album = $changeCompilationAlbumOnly
                     ? $this->song->album
-                    : Album::get((isset($albumartist) ? $albumartist : $artist), $info['album'], $info['year'], $isCompilation);
+                    : Album::get((isset($albumArtist) ? $albumArtist : $artist), $info['album'], $info['year'], $isCompilation);
             } else {
                 $album = $this->song->album;
             }
