@@ -14,6 +14,8 @@
       </div>
       <p class="meta">
         <span class="left">
+          {{ album.year }}
+          •
           {{ album.songs.length | pluralize('song') }}
           •
           {{ album.fmtLength }}
