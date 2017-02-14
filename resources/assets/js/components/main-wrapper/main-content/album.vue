@@ -11,11 +11,11 @@
           <a class="artist" v-if="isNormalArtist" :href="'/#!/artist/'+album.artist.id">{{ album.artist.name }}</a>
           <span class="nope" v-else>{{ album.artist.name }}</span>
           •
-          {{ album.year }}
+          <i class="nowrap">{{ album.year }}</i>
           •
-          {{ meta.songCount | pluralize('song') }}
+          <i class="nowrap">{{ meta.songCount | pluralize('song') }}</i>
           •
-          {{ meta.totalLength }}
+          <i class="nowrap">{{ meta.totalLength }}</i>
 
           <template v-if="sharedState.useLastfm">
             •

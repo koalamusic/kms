@@ -14,13 +14,13 @@
       </div>
       <p class="meta">
         <span class="left">
-          {{ album.year }}
+          <i class="nowrap">{{ album.year }}</i>
           •
-          {{ album.songs.length | pluralize('song') }}
+          <i class="nowrap">{{ album.songs.length | pluralize('song') }}</i>
           •
-          {{ album.fmtLength }}
+          <i class="nowrap">{{ album.fmtLength }}</i>
           •
-          {{ album.playCount | pluralize('play') }}
+          <i class="nowrap">{{ album.playCount | pluralize('play') }}</i>
         </span>
         <span class="right">
           <a href @click.prevent="shuffle" title="Shuffle" class="shuffle-album">

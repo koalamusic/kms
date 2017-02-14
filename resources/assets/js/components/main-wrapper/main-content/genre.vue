@@ -7,9 +7,9 @@
         <controls-toggler :showing-controls="showingControls" @toggleControls="toggleControls"/>
 
         <span class="meta" v-show="meta.songCount">
-          {{ meta.songCount | pluralize('song') }}
+          <i class="nowrap">{{ meta.songCount | pluralize('song') }}</i>
           •
-          {{ meta.totalLength }}
+          <i class="nowrap">{{ meta.totalLength }}</i>
         </span>
       </span>
 

@@ -11,11 +11,11 @@
       </div>
       <p class="meta">
         <span class="left">
-          {{ genre.songs.length | pluralize('song') }}
+          <i class="nowrap">{{ genre.songs.length | pluralize('song') }}</i>
           •
-          {{ genre.fmtLength }}
+          <i class="nowrap">{{ genre.fmtLength }}</i>
           •
-          {{ genre.playCount | pluralize('play') }}
+          <i class="nowrap">{{ genre.playCount | pluralize('play') }}</i>
         </span>
         <span class="right">
           <a href @click.prevent="shuffle" title="Shuffle">
