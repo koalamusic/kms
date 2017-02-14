@@ -238,7 +238,9 @@ class File
 
         $albumFromName = Album::getFromName($info['album']);
 
-        if ($albumFromName !== null && $albumFromName->is_compilation !== 1 && $albumFromName->artist_id != $artist->id
+        if ($albumFromName !== null
+            && $albumFromName->is_compilation !== 1
+            && $albumFromName->artist_id != $artist->id
             && Song::where('album_id', $albumFromName->id)->inDirectory(pathinfo($this->path, PATHINFO_DIRNAME))->first() !== null) {
             // It seems the compilation flag should be set
             // Also update the previous album's artist to various artist
@@ -304,8 +306,8 @@ class File
             // A sample command could be: ./artisan koel:sync --force --tags=artist,album,lyrics
             // We cater for these tags by removing those not specified.
 
-            if(isset($info['albumartist']))
-                $albumArtist = isset($info['albumartist']) ? Artist::get($info['albumartist']) : $this->song->album->artist;
+            if(!empty($info['albumartist']))
+                $albumArtist = !empty($info['albumartist']) ? Artist::get($info['albumartist']) : $this->song->album->artist;
 
             // There's a special case with 'album' though.
             // If 'compilation' tag is specified, 'album' must be counted in as well.
@@ -344,7 +346,7 @@ class File
             $isCompilation = (bool) array_get($info, 'compilation');
 
             $artist = Artist::get($info['artist']);
-            if(isset($info['albumartist']))
+            if(!empty($info['albumartist']))
                 $albumArtist = Artist::get($info['albumartist']);
 
             // Check for the presence of a virtual album file in the current folder to override
