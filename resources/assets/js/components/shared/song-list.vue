@@ -70,7 +70,7 @@ export default {
       }),
       lastSelectedRow: null,
       q: '', // The filter query
-      sortKey: '',
+      sortKey: this.type === 'top-songs' ? 'playCount' : ['album.artist.name', 'album.name', 'track'],
       order: 1,
       sortingByAlbum: false,
       sortingByArtist: false,
