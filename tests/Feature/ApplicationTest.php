@@ -14,7 +14,7 @@ class ApplicationTest extends BrowserKitTestCase
     public function setUp()
     {
         parent::setUp();
-        @unlink(App::publicPath().'/public/hot');
+        @unlink(App::publicPath().'/hot');
     }
 
     public function testStaticUrlWithoutCDN()

@@ -155,7 +155,7 @@ class Album extends Model
      */
     private function generateRandomCoverPath($extension)
     {
-        return app()->publicPath().'/public/img/covers/'.uniqid('', true).".$extension";
+        return app()->publicPath().'/img/covers/'.uniqid('', true).".$extension";
     }
 
     public function setCoverAttribute($value)
