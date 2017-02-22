@@ -21,16 +21,6 @@ class Application extends IlluminateApplication
     const KOEL_VERSION = 'v3.5.5';
 
     /**
-     * We have merged public path and base path.
-     *
-     * @return string
-     */
-    public function publicPath()
-    {
-        return $this->basePath;
-    }
-
-    /**
      * Loads a revision'ed asset file, making use of gulp-rev
      * This is a copycat of L5's Elixir, but catered to our directory structure.
      *
@@ -45,16 +35,16 @@ class Application extends IlluminateApplication
     {
         static $manifest = null;
 
-        $manifestFile = $manifestFile ?: public_path('public/mix-manifest.json');
+        $manifestFile = $manifestFile ?: public_path('mix-manifest.json');
 
         if ($manifest === null) {
             $manifest = json_decode(file_get_contents($manifestFile), true);
         }
 
         if (isset($manifest[$file])) {
-            return file_exists(public_path('public/hot'))
-                    ? "http://localhost:8080{$manifest[$file]}"
-                    : $this->staticUrl("public{$manifest[$file]}");
+            return file_exists(public_path('hot'))
+                ? "http://localhost:8080{$manifest[$file]}"
+                : $this->staticUrl("{$manifest[$file]}");
         }
 
         throw new InvalidArgumentException("File {$file} not defined in asset manifest.");
@@ -73,7 +63,7 @@ class Application extends IlluminateApplication
     {
         $cdnUrl = trim(config('koel.cdn.url'), '/ ');
 
-        return $cdnUrl ? $cdnUrl.'/'.trim(ltrim($name, '/')) : trim(asset($name));
+        return $cdnUrl ? $cdnUrl . '/' . trim(ltrim($name, '/')) : trim(asset($name));
     }
 
     /**

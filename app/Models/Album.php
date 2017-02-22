@@ -49,11 +49,12 @@ class Album extends Model
      *
      * @param Artist $artist
      * @param string $name
+     * @param int    $year
      * @param bool   $isCompilation
      *
      * @return self
      */
-    public static function get(Artist $artist, $name, $isCompilation = false)
+    public static function get(Artist $artist, $name, $year = null, $isCompilation = false)
     {
         // If this is a compilation album, its artist must be "Various Artists"
         if ($isCompilation) {
@@ -63,7 +64,24 @@ class Album extends Model
         return self::firstOrCreate([
             'artist_id' => $artist->id,
             'name' => $name ?: self::UNKNOWN_NAME,
+            'year' => $year,
         ]);
+    }
+
+    /**
+     * Get the first album using only the given name.
+     *
+     * @param string $name
+     *
+     * @return self|null
+     */
+    public static function getFromName($name)
+    {
+        if (strlen($name) == 0) {
+            return;
+        }
+
+        return self::where('name', $name)->first();
     }
 
     /**
@@ -155,7 +173,7 @@ class Album extends Model
      */
     private function generateRandomCoverPath($extension)
     {
-        return app()->publicPath().'/public/img/covers/'.uniqid('', true).".$extension";
+        return app()->publicPath().'/img/covers/'.uniqid('', true).".$extension";
     }
 
     public function setCoverAttribute($value)

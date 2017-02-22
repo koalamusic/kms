@@ -44,7 +44,7 @@ class EventServiceProvider extends ServiceProvider
         // Remove the cover file if the album is deleted
         Album::deleted(function ($album) {
             if ($album->hasCover) {
-                @unlink(app()->publicPath().'/public/img/covers/'.$album->cover);
+                @unlink(app()->publicPath().'/img/covers/'.$album->cover);
             }
         });
     }

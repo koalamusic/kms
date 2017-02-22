@@ -5,9 +5,9 @@
         <controls-toggler :showing-controls="showingControls" @toggleControls="toggleControls"/>
 
         <span class="meta" v-show="meta.songCount">
-          {{ meta.songCount | pluralize('song') }}
+          <i class="nowrap">{{ meta.songCount | pluralize('song') }}</i>
           •
-          {{ meta.totalLength }}
+          <i class="nowrap">{{ meta.totalLength }}</i>
           <template v-if="sharedState.allowDownload && state.songs.length">
             •
             <a href @click.prevent="download" title="Download all songs in playlist">

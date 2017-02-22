@@ -11,11 +11,11 @@
       </div>
       <p class="meta">
         <span class="left">
-          {{ artist.albums.length | pluralize('album') }}
+          <i class="nowrap">{{ artist.albums.length | pluralize('album') }}</i>
           •
-          {{ artist.songCount | pluralize('song') }}
+          <i class="nowrap">{{ artist.songCount | pluralize('song') }}</i>
           •
-          {{ artist.playCount | pluralize('play') }}
+          <i class="nowrap">{{ artist.playCount | pluralize('play') }}</i>
         </span>
         <span class="right">
           <a href @click.prevent="download" v-if="sharedState.allowDownload" title="Download all songs by artist">

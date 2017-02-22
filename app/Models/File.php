@@ -115,6 +115,7 @@ class File
 
         // Apparently track number can be stored with different indices as the following.
         $trackIndices = [
+            'tags.id3v2.track_number',
             'comments.track',
             'comments.tracknumber',
             'comments.track_number',
@@ -124,6 +125,39 @@ class File
             $track = array_get($info, $trackIndices[$i], [0])[0];
         }
 
+        $disc = null;
+        $discIndices = [
+            'tags.id3v2.part_of_a_set',
+            'comments.disc',
+            'comments.disc_number',
+            'comments.part_of_a_set',
+        ];
+
+        for ($i = 0; $i < count($discIndices) && $disc === null; $i++) {
+            $disc = array_get($info, $discIndices[$i], [null])[0];
+        }
+
+        $genre = null;
+        $genreIndices = [
+            'tags.id3v2.genre',
+            'comments.genre',
+        ];
+
+        for ($i = 0; $i < count($genreIndices) && $genre === null; $i++) {
+            $genre = array_get($info, $genreIndices[$i], [null])[0];
+        }
+
+        $year = null;
+        $yearIndices = [
+            'tags.id3v2.year',
+            'comments.year',
+            'comments.creation_date',
+        ];
+
+        for ($i = 0; $i < count($yearIndices) && $year === null; $i++) {
+            $year = array_get($info, $yearIndices[$i], [null])[0];
+        }
+
         $props = [
             'artist' => '',
             'album' => '',
@@ -131,7 +165,10 @@ class File
             'title' => '',
             'length' => $info['playtime_seconds'],
             'track' => (int) $track,
+            'disc' => $disc === null ? null : (int) $disc,
+            'genre' => $genre,
             'lyrics' => '',
+            'year' => $year === null ? null : ((int) $year > 1900 ? (int) $year: ((int) $year % 100) + 1900), // Normalize year
             'cover' => array_get($info, 'comments.picture', [null])[0],
             'path' => $this->path,
             'mtime' => $this->mtime,
@@ -144,6 +181,10 @@ class File
         // We prefer id3v2 tags over others.
         if (!$artist = array_get($info, 'tags.id3v2.artist', [null])[0]) {
             $artist = array_get($comments, 'artist', [''])[0];
+        }
+
+        if (!$genre = array_get($info, 'tags.id3v2.genre', [null])[0]) {
+            $genre = array_get($comments, 'genre', [''])[0];
         }
 
         if (!$albumArtist = array_get($info, 'tags.id3v2.band', [null])[0]) {
@@ -166,6 +207,7 @@ class File
         $props['title'] = html_entity_decode(trim($title));
         $props['album'] = html_entity_decode(trim($album));
         $props['artist'] = html_entity_decode(trim($artist));
+        $props['genre'] = html_entity_decode(trim($genre));
         $props['albumartist'] = html_entity_decode(trim($albumArtist));
         $props['lyrics'] = html_entity_decode(trim($lyrics));
 
@@ -173,10 +215,60 @@ class File
         // - "part_of_a_compilation" tag (used by iTunes), or
         // - "albumartist" (used by non-retarded applications).
         $props['compilation'] = (bool) (
-            array_get($comments, 'part_of_a_compilation', [false])[0] || $props['albumartist']
+            isset($comments['part_of_a_compilation']) || ($props['albumartist'] && $props['albumartist'] != $props['artist'] && stripos($props['artist'], $props['albumartist']) === false)
         );
 
         return $this->info = $props;
+    }
+
+    /**
+     * Check if the given file is likely a compilation.
+     *
+     * @param array $info     The extracted tags to sync
+     * @param int   $artistId The artist id found from the tags
+     *
+     * @return bool The compilation likelyness flag
+     */
+    private function isLikelyCompilation($info, $artist)
+    {
+        // Check if we need to set up the compilation flag by ourselves
+        if (!isset($info['album'])) {
+            return false;
+        }
+
+        $albumFromName = Album::getFromName($info['album']);
+
+        if ($albumFromName !== null
+            && $albumFromName->is_compilation !== 1
+            && $albumFromName->artist_id != $artist->id
+            && Song::where('album_id', $albumFromName->id)->inDirectory(pathinfo($this->path, PATHINFO_DIRNAME))->first() !== null) {
+            // It seems the compilation flag should be set
+            // Also update the previous album's artist to various artist
+            $albumFromName->update(['is_compilation' => '1', 'artist_id' => Artist::VARIOUS_ID]);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if a ".virtual-album" file exists in the current folder.
+     * In that case, the current "album" tag (if it exists) is replaced by the name of the folder
+     * This allows to store many "unrelated" song in a folder and they'll appear as if they were
+     * part of a simple album, and not clutter the album list with numerous "1 song" albums.
+     *
+     * @param array $info     The extracted tags to sync
+     */
+    private function checkVirtualAlbum(&$info)
+    {
+        $folderName = pathinfo($this->path, PATHINFO_DIRNAME);
+        // Check if a virtual album file exists in the current song's folder
+        if (!file_exists($folderName.'/.virtual-album')) {
+            return;
+        }
+
+        $info['album'] = basename($folderName);
     }
 
     /**
@@ -214,6 +306,9 @@ class File
             // A sample command could be: ./artisan koel:sync --force --tags=artist,album,lyrics
             // We cater for these tags by removing those not specified.
 
+            if(!empty($info['albumartist']))
+                $albumArtist = !empty($info['albumartist']) ? Artist::get($info['albumartist']) : $this->song->album->artist;
+
             // There's a special case with 'album' though.
             // If 'compilation' tag is specified, 'album' must be counted in as well.
             // But if 'album' isn't specified, we don't want to update normal albums.
@@ -232,20 +327,38 @@ class File
 
             $isCompilation = (bool) array_get($info, 'compilation');
 
+            // Check if we need to set up the compilation flag by ourselves
+            if (!$isCompilation) {
+                $isCompilation = $this->isLikelyCompilation($info, (isset($albumArtist) ? $albumArtist : $artist));
+            }
+
             // If the "album" tag is specified, use it.
             // Otherwise, re-use the existing model value.
             if (isset($info['album'])) {
                 $album = $changeCompilationAlbumOnly
                     ? $this->song->album
-                    : Album::get($artist, $info['album'], $isCompilation);
+                    : Album::get((isset($albumArtist) ? $albumArtist : $artist), $info['album'], $info['year'], $isCompilation);
             } else {
                 $album = $this->song->album;
             }
         } else {
             // The file is newly added.
             $isCompilation = (bool) array_get($info, 'compilation');
+
             $artist = Artist::get($info['artist']);
-            $album = Album::get($artist, $info['album'], $isCompilation);
+            if(!empty($info['albumartist']))
+                $albumArtist = Artist::get($info['albumartist']);
+
+            // Check for the presence of a virtual album file in the current folder to override
+            // the current song's album tag
+            $this->checkVirtualAlbum($info);
+
+            // Check if we need to set up the compilation flag by ourselves
+            if (!$isCompilation) {
+                $isCompilation = $this->isLikelyCompilation($info, (isset($albumArtist) ? $albumArtist : $artist));
+            }
+
+            $album = Album::get((isset($albumArtist) ? $albumArtist : $artist), $info['album'], $info['year'], $isCompilation);
         }
 
         if (!$album->has_cover) {
@@ -267,12 +380,14 @@ class File
 
         // If the song is part of a compilation, make sure we properly set its
         // artist and contributing artist attributes.
-        if ($isCompilation) {
+        if ($isCompilation || (isset($albumArtist) && $albumArtist->id != $artist->id)) {
             $info['contributing_artist_id'] = $artist->id;
         }
 
+        $info['genre_id'] = !isset($info['genre']) || !$info['genre'] ? null : Genre::get($info['genre'])->id;
+
         // Remove these values from the info array, so that we can just use the array as model's input data.
-        array_forget($info, ['artist', 'albumartist', 'album', 'cover', 'compilation']);
+        array_forget($info, ['artist', 'albumartist', 'album', 'year', 'cover', 'compilation', 'genre']);
 
         return Song::updateOrCreate(['id' => $this->hash], $info);
     }
