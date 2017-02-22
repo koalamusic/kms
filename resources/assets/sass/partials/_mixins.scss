@@ -30,7 +30,7 @@
   .item {
     flex-direction: column;
     margin-bottom: 16px;
-    width: 23.5%;
+    width: 13.2%;
     position: relative;
 
     .as-list & {
@@ -53,7 +53,19 @@
       display: none;
     }
 
-    @media only screen and (max-width: 1200px) {
+    @media only screen and (max-width: 1700px) {
+      width: 15.5%;
+    }
+
+    @media only screen and (max-width: 1500px) {
+      width: 18.5%;
+    }
+
+    @media only screen and (max-width: 1300px) {
+      width: 23.5%;
+    }
+
+    @media only screen and (max-width: 1150px) {
       width: 32%;
     }
 
@@ -66,9 +78,17 @@
     }
 
     html.with-extra-panel & {
-      width: 24%;
+      width: 15.5%;
 
-      @media only screen and (max-width: 1400px) {
+      @media only screen and (max-width: 1700px) {
+        width: 18.5%;
+      }
+
+      @media only screen and (max-width: 1500px) {
+        width: 23.5%;
+      }
+
+      @media only screen and (max-width: 1300px) {
         width: 32%;
       }
 
