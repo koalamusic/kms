@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Koel</title>
+    <title>Koala Music Streamer</title>
 
     <meta name="description" content="{{ config('app.tagline') }}">
     <meta charset="utf-8">
