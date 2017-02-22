@@ -111,7 +111,7 @@ class Artist extends Model
             try {
                 $extension = explode('.', $image);
                 $fileName = uniqid().'.'.trim(strtolower(last($extension)), '. ');
-                $coverPath = app()->publicPath().'/public/img/artists/'.$fileName;
+                $coverPath = app()->publicPath().'/img/artists/'.$fileName;
 
                 file_put_contents($coverPath, file_get_contents($image));
 

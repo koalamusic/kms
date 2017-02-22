@@ -47,7 +47,7 @@ abstract class BrowserKitTestCase extends BaseBrowserKitTestCase
 
         $app->make(Kernel::class)->bootstrap();
 
-        $this->coverPath = $app->basePath().'/public/img/covers';
+        $this->coverPath = $app->basePath().'/img/covers';
 
         return $app;
     }

@@ -123,8 +123,7 @@ module.exports.module = {
             test: /\.(png|jpg|gif)$/,
             loader: 'file-loader',
             options: {
-                name: 'images/[name].[ext]?[hash]',
-                publicPath: '/public/'
+                name: 'images/[name].[ext]?[hash]'
             }
         },
 
@@ -132,8 +131,7 @@ module.exports.module = {
             test: /\.(woff2?|ttf|eot|svg|otf)$/,
             loader: 'file-loader',
             options: {
-                name: 'fonts/[name].[ext]?[hash]',
-                publicPath: '/public/'
+                name: 'fonts/[name].[ext]?[hash]'
             }
         }
     ]

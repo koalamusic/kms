@@ -14,7 +14,7 @@ describe('stores/artist', () => {
     })
 
     it('correctly gets artist images', () => {
-      artistStore.state.artists[0].image.should.equal('/public/img/covers/565c0f7067425.jpeg')
+      artistStore.state.artists[0].image.should.equal('/img/covers/565c0f7067425.jpeg')
     })
 
     it('correctly counts songs by artists', () => {
@@ -24,7 +24,7 @@ describe('stores/artist', () => {
 
   describe('#getImage', () => {
     it('correctly gets an artist’s image', () => {
-      artistStore.getImage(artistStore.state.artists[0]).should.equal('/public/img/covers/565c0f7067425.jpeg')
+      artistStore.getImage(artistStore.state.artists[0]).should.equal('/img/covers/565c0f7067425.jpeg')
     })
   })
 
