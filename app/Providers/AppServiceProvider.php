@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
 
@@ -14,6 +15,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        Schema::defaultStringLength(191);
+
         // Add some custom validation rules
         Validator::extend('path.valid', function ($attribute, $value, $parameters, $validator) {
             return is_dir($value) && is_readable($value);
