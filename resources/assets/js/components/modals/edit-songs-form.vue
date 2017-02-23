@@ -173,7 +173,7 @@ export default {
      * @return {string}
      */
     coverUrl () {
-      return this.inSameAlbum ? this.songs[0].album.cover : '/img/covers/unknown-album.png'
+      return this.inSameAlbum ? this.songs[0].album.cover : '/img/unknown-album.png'
     },
 
     /**

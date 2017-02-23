@@ -375,7 +375,7 @@ export default {
   .album-thumb {
     flex: 0 0 $footerHeight;
     height: $footerHeight;
-    background: url(/img/covers/unknown-album.png);
+    background: url(/img/unknown-album.png);
     background-size: $footerHeight;
     position: relative;
   }
