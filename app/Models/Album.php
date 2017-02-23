@@ -183,7 +183,7 @@ class Album extends Model
 
     public function getCoverAttribute($value)
     {
-        return app()->staticUrl('public/img/covers/'.($value ?: self::UNKNOWN_COVER));
+        return app()->staticUrl('img/covers/'.($value ?: self::UNKNOWN_COVER));
     }
 
     /**

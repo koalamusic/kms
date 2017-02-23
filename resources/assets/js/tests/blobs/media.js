@@ -27,7 +27,7 @@ export default [
         id: 1194,
         artist_id: 1,
         name: 'And The Music Speaks',
-        cover: '/img/covers/unknown-album.png',
+        cover: '/img/unknown-album.png',
         songs: [
           {
             id: 'a6a550f7d950d2a2520f9bf1a60f025a',
@@ -91,7 +91,7 @@ export default [
         id: 1218,
         artist_id: 2,
         name: 'Pat Garrett & Billy the Kid',
-        cover: '/img/covers/unknown-album.png',
+        cover: '/img/unknown-album.png',
         songs: [
           {
             id: 'aa16bbef6a9710eb9a0f41ecc534fad5',
@@ -110,7 +110,7 @@ export default [
         id: 1219,
         artist_id: 2,
         name: 'The Times They Are A-Changin\'',
-        cover: '/img/covers/unknown-album.png',
+        cover: '/img/unknown-album.png',
         songs: [
           {
             id: 'cb7edeac1f097143e65b1b2cde102482',
@@ -135,7 +135,7 @@ export default [
         id: 1268,
         artist_id: 3,
         name: 'Back To Bedlam',
-        cover: '/img/covers/unknown-album.png',
+        cover: '/img/unknown-album.png',
         songs: [
           {
             id: '0ba9fb128427b32683b9eb9140912a70',

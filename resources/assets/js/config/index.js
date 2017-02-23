@@ -1,4 +1,4 @@
 export default {
-  unknownCover: (typeof window !== 'undefined' ? window.location.href : '/') + '/img/covers/unknown-album.png',
-  appTitle: 'Koel'
+  unknownCover: '/img/unknown-album.png',
+  appTitle: 'Koala Music Streamer'
 }

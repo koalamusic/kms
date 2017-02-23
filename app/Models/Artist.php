@@ -144,6 +144,6 @@ class Artist extends Model
      */
     public function getImageAttribute($value)
     {
-        return  $value ? app()->staticUrl("public/img/artists/$value") : null;
+        return  $value ? app()->staticUrl("img/artists/$value") : null;
     }
 }
