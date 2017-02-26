@@ -31,7 +31,7 @@ class SynchronizeMedias extends Command
     /**
      * @var Filesystem
      */
-    private $filesystem;
+    protected $filesystem;
 
     /**
      * Create a new command instance.
@@ -63,7 +63,7 @@ class SynchronizeMedias extends Command
     /**
      * @return Collection
      */
-    private function getMediasToSync()
+    protected function getMediasToSync()
     {
         $mediasFromFileSystem = $this->getMediasFromFilesystem();
         $alreadySyncedMedias = $this->getAlreadySyncedMedias();
@@ -74,7 +74,7 @@ class SynchronizeMedias extends Command
     /**
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    private function getAlreadySyncedMedias()
+    protected function getAlreadySyncedMedias()
     {
         return Song::all()->keyBy('id');
     }
@@ -83,7 +83,7 @@ class SynchronizeMedias extends Command
      * @return Collection
      * @throws \Exception
      */
-    private function getMediasFromFilesystem()
+    protected function getMediasFromFilesystem()
     {
         if (!$this->filesystem->isDirectory(Setting::get('media_path'))) {
             throw new \Exception();
