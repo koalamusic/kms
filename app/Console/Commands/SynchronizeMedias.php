@@ -37,7 +37,6 @@ class SynchronizeMedias extends Command
      * Create a new command instance.
      *
      * @param Filesystem $filesystem
-     * @throws \Exception
      */
     public function __construct(Filesystem $filesystem)
     {
