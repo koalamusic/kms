@@ -16,14 +16,13 @@ class Kernel extends ConsoleKernel
         Commands\SyncMedia::class,
         Commands\Init::class,
         Commands\GenerateJWTSecret::class,
-        Commands\SynchronizeMedias::class,
+        Commands\Medias\Synchronize::class,
     ];
 
     /**
      * Define the application's command schedule.
      *
      * @param Schedule $schedule
-     *
      * @return void
      */
     protected function schedule(Schedule $schedule)
