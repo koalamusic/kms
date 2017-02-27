@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\Medias;
 
 use App\Jobs\SynchronizeMedia;
 use App\Models\Setting;
@@ -10,7 +10,7 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Support\Collection;
 
-class SynchronizeMedias extends Command
+class Synchronize extends Command
 {
     use DispatchesJobs;
 
@@ -89,7 +89,7 @@ class SynchronizeMedias extends Command
         if (!$this->filesystem->isDirectory($mediaPath)) {
             throw new \Exception();
         }
-        
+
         $medias = $this->filesystem->allFiles($mediaPath);
 
         return Collection::make($medias)
