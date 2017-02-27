@@ -84,12 +84,13 @@ class SynchronizeMedias extends Command
      */
     protected function getMediasFromFilesystem()
     {
-        if (!$this->filesystem->isDirectory(Setting::get('media_path'))) {
+        $mediaPath = Setting::get('media_path');
+
+        if (!$this->filesystem->isDirectory($mediaPath)) {
             throw new \Exception();
         }
-
-        $path = Setting::get('media_path');
-        $medias = $this->filesystem->allFiles($path);
+        
+        $medias = $this->filesystem->allFiles($mediaPath);
 
         return Collection::make($medias)
             ->keyBy(function ($file) {
