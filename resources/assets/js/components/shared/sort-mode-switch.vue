@@ -4,7 +4,7 @@
       title="Sort by name"
       @click.prevent="setSort('name')"><i class="fa fa-sort-alpha-asc"></i></a>
     <a class="play-count" :class="{ active: mutatedSort === 'playCount' }"
-       title="Sort by play count"
+       title="Sort by plays"
        @click.prevent="setSort('playCount', true)"><i class="fa fa-play-circle"></i></a>
     <a class="random" :class="{ active: mutatedSort === 'random' }"
       title="Sort in random order"
