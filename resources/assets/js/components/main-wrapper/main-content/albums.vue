@@ -2,7 +2,7 @@
   <section id="albumsWrapper">
     <h1 class="heading">
       <span>Albums</span>
-      <sort-mode-switch :mode="sortMode" for="albums"/>
+      <sort-mode-switch :mode="sorting" for="albums"/>
       &nbsp;
       <view-mode-switch :mode="viewMode" for="albums"/>
     </h1>

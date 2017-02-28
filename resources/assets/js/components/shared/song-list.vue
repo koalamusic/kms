@@ -70,7 +70,7 @@ export default {
       }),
       lastSelectedRow: null,
       q: '', // The filter query
-      sortKey: this.type === 'top-songs' ? 'playCount' : ['album.artist.name', 'album.name', 'track'],
+      sortKey: this.type === 'top-songs' ? 'playCount' : ['song.album.artist.name', 'song.album.name', 'song.track'],
       order: 1,
       sortingByAlbum: false,
       sortingByArtist: false,
@@ -163,7 +163,7 @@ export default {
         this.sortKey = key
         this.order *= -1
       }
-
+console.log(key)
       this.sortingByAlbum = Array.isArray(this.sortKey) && this.sortKey[0] === 'song.album.name'
       this.sortingByArtist = Array.isArray(this.sortKey) && this.sortKey[0] === 'song.album.artist.name'
       this.songRows = orderBy(this.songRows, this.sortKey, this.order)
