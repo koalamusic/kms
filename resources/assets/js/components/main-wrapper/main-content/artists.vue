@@ -2,6 +2,8 @@
   <section id="artistsWrapper">
     <h1 class="heading">
       <span>Artists</span>
+      <sort-mode-switch :mode="sorting" for="artists"/>
+      &nbsp;
       <view-mode-switch :mode="viewMode" for="artists"/>
     </h1>
 
@@ -14,31 +16,40 @@
 </template>
 
 <script>
-import { filterBy, limitBy, event } from '../../../utils'
+import { filterBy, limitBy, orderBy, event } from '../../../utils'
 import { artistStore } from '../../../stores'
 
 import artistItem from '../../shared/artist-item.vue'
 import viewModeSwitch from '../../shared/view-mode-switch.vue'
+import sortModeSwitch from '../../shared/sort-mode-switch.vue'
 import infiniteScroll from '../../../mixins/infinite-scroll'
 
 export default {
   mixins: [infiniteScroll],
 
-  components: { artistItem, viewModeSwitch },
+  components: { artistItem, viewModeSwitch, sortModeSwitch },
 
   data () {
     return {
-      perPage: 9,
-      numOfItems: 9,
+      perPage: 21,
+      numOfItems: 21,
       q: '',
-      viewMode: null
+      viewMode: null,
+      sorting: {
+        key: null,
+        reverse: false
+      },
+      datas: [],
+      reload: true
     }
   },
 
   computed: {
     displayedItems () {
+      this.loadItems()
+
       return limitBy(
-        filterBy(artistStore.all, this.q, 'name'),
+        this.datas,
         this.numOfItems
       )
     }
@@ -47,6 +58,19 @@ export default {
   methods: {
     changeViewMode (mode) {
       this.viewMode = mode
+    },
+    changeSortMode (sort, reverse = false) {
+      this.sorting.key = sort
+      this.sorting.reverse = reverse
+      this.reload = true
+    },
+    loadItems(force = false) {
+      if(this.reload || force) {
+        this.datas = filterBy(artistStore.all, this.q, 'name')
+        this.datas = orderBy(this.datas, this.sorting.key, this.sorting.reverse)
+
+        this.reload = false
+      }
     }
   },
 
@@ -55,10 +79,11 @@ export default {
       /**
        * When the application is ready, load the first batch of items.
        */
-      'koel:ready': () => this.displayMore(),
+      'koel:ready': () => this.loadItems(true),
 
       'filter:changed': q => {
-        this.q = q
+        this.q = q,
+        this.reload = true
       }
     })
   }
