@@ -2,7 +2,7 @@
   <section id="artistsWrapper">
     <h1 class="heading">
       <span>Artists</span>
-      <sort-mode-switch :mode="sortMode" for="artists"/>
+      <sort-mode-switch :mode="sorting" for="artists"/>
       &nbsp;
       <view-mode-switch :mode="viewMode" for="artists"/>
     </h1>
