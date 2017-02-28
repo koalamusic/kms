@@ -18,9 +18,11 @@
           •
           <i class="nowrap">{{ album.songs.length | pluralize('song') }}</i>
           •
-          <i class="nowrap">{{ album.fmtLength }}</i>
-          •
-          <i class="nowrap">{{ album.playCount | pluralize('play') }}</i>
+          <i class="nowrap">
+            <i class="nowrap">{{ album.fmtLength }}</i>
+            •
+            <i class="nowrap">{{ album.playCount | pluralize('play') }}</i>
+          </i>
         </span>
         <span class="right">
           <a href @click.prevent="shuffle" title="Shuffle" class="shuffle-album">
