@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { filterBy, limitBy, event } from '../../../utils'
+import { filterBy, limitBy, orderBy, event } from '../../../utils'
 import { albumStore } from '../../../stores'
 import albumItem from '../../shared/album-item.vue'
 import viewModeSwitch from '../../shared/view-mode-switch.vue'
@@ -33,7 +33,10 @@ export default {
       numOfItems: 21,
       q: '',
       viewMode: null,
-      sortMode: null,
+      sorting: {
+        key: null,
+        reverse: false
+      },
       datas: [],
       reload: true
     }
@@ -54,16 +57,15 @@ export default {
     changeViewMode (mode) {
       this.viewMode = mode
     },
-    changeSortMode (sort) {
-      this.sortMode = sort
+    changeSortMode (sort, reverse = false) {
+      this.sorting.key = sort
+      this.sorting.reverse = reverse
       this.reload = true
     },
     loadItems(force = false) {
       if(this.reload || force) {
-        if(this.sortMode == 'random')
-          this.datas = filterBy(albumStore.all, this.q, 'random')
-        else
-          this.datas = filterBy(albumStore.all, this.q, 'name', 'artist.name')
+        this.datas = filterBy(albumStore.all, this.q, 'name', 'artist.name')
+        this.datas = orderBy(this.datas, this.sorting.key, this.sorting.reverse)
 
         this.reload = false
       }

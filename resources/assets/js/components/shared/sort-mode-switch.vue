@@ -1,8 +1,11 @@
 <template>
   <span class="sort-modes">
-    <a class="name-asc" :class="{ active: mutatedSort === 'name-asc' }"
-      title="Sort by name asc"
-      @click.prevent="setSort('name-asc')"><i class="fa fa-sort-alpha-asc"></i></a>
+    <a class="name" :class="{ active: mutatedSort === 'name' }"
+      title="Sort by name"
+      @click.prevent="setSort('name')"><i class="fa fa-sort-alpha-asc"></i></a>
+    <a class="play-count" :class="{ active: mutatedSort === 'playCount' }"
+       title="Sort by play count"
+       @click.prevent="setSort('playCount', true)"><i class="fa fa-play-circle"></i></a>
     <a class="random" :class="{ active: mutatedSort === 'random' }"
       title="Sort in random order"
       @click.prevent="setSort('random')"><i class="fa fa-random"></i></a>
@@ -10,8 +13,6 @@
 </template>
 
 <script>
-import isMobile from 'ismobilejs'
-
 import { event } from '../../utils'
 import { preferenceStore as preferences } from '../../stores'
 
@@ -36,9 +37,9 @@ export default {
   },
 
   methods: {
-    setSort (sort) {
+    setSort (sort, reverse = false) {
       preferences[this.preferenceKey] = this.mutatedSort = sort
-      this.$parent.changeSortMode(sort)
+      this.$parent.changeSortMode(sort, reverse)
     }
   },
 
@@ -48,7 +49,7 @@ export default {
 
       // If the value is empty, we set a default mode.
       if (!this.mutatedSort) {
-        this.mutatedSort = 'name-asc'
+        this.mutatedSort = 'name'
       }
 
       this.setSort(this.mutatedSort)
@@ -63,7 +64,7 @@ export default {
 
 .sort-modes {
   display: flex;
-  flex: 0 0 64px;
+  flex: 0 0 96px;
   border: 1px solid rgba(255, 255, 255, .2);
   height: 2rem;
   border-radius: 5px;
@@ -72,7 +73,7 @@ export default {
   a {
     width: 50%;
     text-align: center;
-    line-height: 2rem;
+    line-height: 1.9rem;
     font-size: 1rem;
 
     &.active {
