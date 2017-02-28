@@ -54,7 +54,9 @@ export function limitBy (arr, n, offset = 0) {
 }
 
 export function filterBy (arr, search, ...keys) {
-  if (!search) {
+  if(keys[0] == 'random')
+    return _.shuffle(arr)
+  else if (!search) {
     return arr
   }
 
