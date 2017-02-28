@@ -9,13 +9,13 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * @property string cover           The path to the album's cover
- * @property bool   has_cover       If the album has a cover image
- * @property int    id
+ * @property bool has_cover       If the album has a cover image
+ * @property int id
  * @property string name            Name of the album
- * @property bool   is_compilation  If the album is a compilation from multiple artists
+ * @property bool is_compilation  If the album is a compilation from multiple artists
  * @property Artist artist          The album's artist
- * @property int    artist_id
- * @property Collection  songs
+ * @property int artist_id
+ * @property Collection songs
  */
 class Album extends Model
 {
@@ -49,8 +49,8 @@ class Album extends Model
      *
      * @param Artist $artist
      * @param string $name
-     * @param int    $year
-     * @param bool   $isCompilation
+     * @param int $year
+     * @param bool $isCompilation
      *
      * @return self
      */
@@ -139,7 +139,7 @@ class Album extends Model
      * Write a cover image file with binary data and update the Album with the new cover file.
      *
      * @param string $binaryData
-     * @param string $extension  The file extension
+     * @param string $extension The file extension
      */
     public function writeCoverFile($binaryData, $extension)
     {
@@ -173,7 +173,7 @@ class Album extends Model
      */
     private function generateRandomCoverPath($extension)
     {
-        return app()->publicPath().'/img/covers/'.uniqid('', true).".$extension";
+        return app()->publicPath() . '/img/covers/' . uniqid('', true) . ".$extension";
     }
 
     public function setCoverAttribute($value)
@@ -183,7 +183,7 @@ class Album extends Model
 
     public function getCoverAttribute($value)
     {
-        return app()->staticUrl('img/covers/'.($value ?: self::UNKNOWN_COVER));
+        return app()->staticUrl('img/' . ($value ? 'covers/' . $value : self::UNKNOWN_COVER));
     }
 
     /**
