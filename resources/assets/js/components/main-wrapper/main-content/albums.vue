@@ -78,7 +78,8 @@ export default {
       'koel:ready': () => this.loadItems(true),
 
       'filter:changed': q => {
-        this.q = q
+        this.q = q,
+        this.reload = true
       }
     })
   }
