@@ -20,12 +20,12 @@
       />
     </h1>
 
-    <song-list :items="state.songs" type="allSongs"/>
+    <song-list :items="state.songs" type="allSongs" ref="songList"/>
   </section>
 </template>
 
 <script>
-import { pluralize } from '../../../utils'
+import { pluralize, event } from '../../../utils'
 import { songStore } from '../../../stores'
 import hasSongList from '../../../mixins/has-song-list'
 
@@ -38,7 +38,26 @@ export default {
     return {
       state: songStore.state
     }
-  }
+  },
+  created () {
+    /**
+     * Listen to 'main-content-view:load' event to load the requested album
+     * into view if applicable.
+     *
+     * @param {String} view   The view name
+     * @param {Object} album  The album object
+     */
+    event.on('main-content-view:load', (view, album) => {
+      /*if (view === 'album') {
+        this.info.showing = false
+        this.album = album
+        */// #530
+        this.$nextTick(() => {
+          this.$refs.songList.sort()
+        })
+      //}
+    })
+  },
 }
 </script>
 
