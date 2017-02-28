@@ -1,11 +1,13 @@
 import { each, isObject, isNumber, get } from 'lodash'
 
 export function orderBy (arr, sortKey, reverse) {
-  if (!sortKey) {
+  if(sortKey == 'random')
+    return _.shuffle(arr)
+  else if (!sortKey) {
     return arr
   }
 
-  const order = (reverse && reverse < 0) ? -1 : 1
+  const order = ((reverse && reverse < 0) || reverse === true) ? -1 : 1
 
   function compareRecordsByKey (a, b, key) {
     let aKey = isObject(a) ? get(a, key) : a
