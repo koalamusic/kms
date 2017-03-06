@@ -11,6 +11,7 @@ class MediaCache
 
     public function get()
     {
+        ini_set('memory_limit', '256M');
         if (!config('koel.cache_media')) {
             return Artist::orderBy('name')->with('albums', with('albums.songs'))->get();
         }
