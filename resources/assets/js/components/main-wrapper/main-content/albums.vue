@@ -37,7 +37,6 @@ export default {
         key: null,
         reverse: false
       },
-      datas: [],
       reload: true
     }
   },
@@ -47,7 +46,7 @@ export default {
       this.loadItems()
 
       return limitBy(
-        this.datas,
+              albumStore.all,
         this.numOfItems
       )
     }
@@ -64,8 +63,8 @@ export default {
     },
     loadItems(force = false) {
       if(this.reload || force) {
-        this.datas = filterBy(albumStore.all, this.q, 'name', 'artist.name')
-        this.datas = orderBy(this.datas, this.sorting.key, this.sorting.reverse)
+        albumStore.all = filterBy(albumStore.all, this.q, 'name', 'artist.name')
+        albumStore.all = orderBy(albumStore.all, this.sorting.key, this.sorting.reverse)
 
         this.reload = false
       }
