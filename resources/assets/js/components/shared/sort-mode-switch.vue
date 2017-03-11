@@ -44,16 +44,14 @@ export default {
   },
 
   created () {
-    event.on('koel:ready', () => {
-      this.mutatedSort = preferences[this.preferenceKey]
+    this.mutatedSort = preferences[this.preferenceKey]
 
-      // If the value is empty, we set a default mode.
-      if (!this.mutatedSort) {
-        this.mutatedSort = 'name'
-      }
+    // If the value is empty, we set a default mode.
+    if (!this.mutatedSort) {
+      this.mutatedSort = 'name'
+    }
 
-      this.setSort(this.mutatedSort)
-    })
+    this.setSort(this.mutatedSort)
   }
 }
 </script>

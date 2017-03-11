@@ -2,7 +2,7 @@
   <section id="albumsWrapper">
     <h1 class="heading">
       <span>Albums</span>
-      <sort-mode-switch :mode="sorting" for="albums"/>
+      <sort-mode-switch :sort="sorting" for="albums"/>
       &nbsp;
       <view-mode-switch :mode="viewMode" for="albums"/>
     </h1>
@@ -17,11 +17,12 @@
 
 <script>
 import { filterBy, limitBy, orderBy, event } from '../../../utils'
-import { albumStore } from '../../../stores'
+import { albumStore, albums } from '../../../stores'
 import albumItem from '../../shared/album-item.vue'
 import viewModeSwitch from '../../shared/view-mode-switch.vue'
 import sortModeSwitch from '../../shared/sort-mode-switch.vue'
 import infiniteScroll from '../../../mixins/infinite-scroll'
+import { http } from '../../../services'
 
 export default {
   mixins: [infiniteScroll],
@@ -32,22 +33,19 @@ export default {
       perPage: 21,
       numOfItems: 21,
       q: '',
-      viewMode: null,
+      viewMode: 'thumbnails',
       sorting: {
-        key: null,
+        key: 'name',
         reverse: false
       },
-      datas: [],
-      reload: true
+      datas: []
     }
   },
 
   computed: {
     displayedItems () {
-      this.loadItems()
-
       return limitBy(
-        this.datas,
+        filterBy(this.datas, this.q, 'name', 'artist.name'),
         this.numOfItems
       )
     }
@@ -60,28 +58,27 @@ export default {
     changeSortMode (sort, reverse = false) {
       this.sorting.key = sort
       this.sorting.reverse = reverse
-      this.reload = true
+      this.sortItems()
     },
-    loadItems(force = false) {
-      if(this.reload || force) {
-        this.datas = filterBy(albumStore.all, this.q, 'name', 'artist.name')
-        this.datas = orderBy(this.datas, this.sorting.key, this.sorting.reverse)
-
-        this.reload = false
-      }
+    sortItems() {
+      this.datas = orderBy(this.datas, this.sorting.key, this.sorting.reverse)
+    },
+    init() {
+      var self = this
+      albums.init().then(function(albums) {
+        self.datas = albums
+        self.sortItems()
+      }).catch(function() {
+        console.log("Albums loading error")
+      })
     }
   },
 
   created () {
+    this.init()
     event.on({
-      /**
-       * When the application is ready, load the first batch of items.
-       */
-      'koel:ready': () => this.loadItems(true),
-
       'filter:changed': q => {
-        this.q = q,
-        this.reload = true
+        this.q = q
       }
     })
   }

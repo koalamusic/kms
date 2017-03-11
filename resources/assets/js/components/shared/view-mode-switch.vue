@@ -43,18 +43,16 @@ export default {
   },
 
   created () {
-    event.on('koel:ready', () => {
-      this.mutatedMode = preferences[this.preferenceKey]
+    this.mutatedMode = preferences[this.preferenceKey]
 
-      // If the value is empty, we set a default mode.
-      // On mobile, the mode should be 'listing'.
-      // For desktop, 'thumbnails'.
-      if (!this.mutatedMode) {
-        this.mutatedMode = isMobile.phone ? 'list' : 'thumbnails'
-      }
+    // If the value is empty, we set a default mode.
+    // On mobile, the mode should be 'listing'.
+    // For desktop, 'thumbnails'.
+    if (!this.mutatedMode) {
+      this.mutatedMode = isMobile.phone ? 'list' : 'thumbnails'
+    }
 
-      this.setMode(this.mutatedMode)
-    })
+    this.setMode(this.mutatedMode)
   }
 }
 </script>

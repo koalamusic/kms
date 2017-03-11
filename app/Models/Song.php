@@ -65,6 +65,12 @@ class Song extends Model
         return $this->belongsTo(ContributingArtist::class);
     }
 
+    public function interactions()
+    {
+        return $this->hasOne(Interaction::class, 'song_id', 'id')
+            ->whereUserId(auth()->user()->id);
+    }
+
     public function album()
     {
         return $this->belongsTo(Album::class);

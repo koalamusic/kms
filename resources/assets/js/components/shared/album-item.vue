@@ -57,8 +57,9 @@ export default {
 
   computed: {
     isNormalArtist () {
-      return !artistStore.isVariousArtists(this.album.artist) &&
-        !artistStore.isUnknownArtist(this.album.artist)
+      return true
+      /*return !artistStore.isVariousArtists(this.album.artist) &&
+        !artistStore.isUnknownArtist(this.album.artist)*/
     }
   },
 
