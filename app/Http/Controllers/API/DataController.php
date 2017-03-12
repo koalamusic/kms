@@ -33,7 +33,6 @@ class DataController extends Controller
         $genres = Genre::orderBy('name')->get()->toArray();
 
         return response()->json([
-            'artists' => MediaCache::get(),
             'genres' => $genres,
             'settings' => auth()->user()->is_admin ? Setting::pluck('value', 'key')->all() : [],
             'playlists' => $playlists,
