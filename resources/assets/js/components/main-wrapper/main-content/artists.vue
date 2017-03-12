@@ -31,8 +31,8 @@ export default {
 
   data () {
     return {
-      perPage: 21,
-      numOfItems: 21,
+      perPage: 100,
+      numOfItems: 100,
       q: '',
       viewMode: null,
       sorting: {
