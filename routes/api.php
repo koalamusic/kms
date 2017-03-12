@@ -22,6 +22,11 @@ Route::group(['namespace' => 'API'], function () {
         // Songs.
         Route::any('songs', 'SongController@index');
 
+        // Genres
+        Route::get('genres/{id}/songs', 'GenreController@songs');
+        Route::resource('genres', 'GenreController');
+
+
         Route::post('settings', 'SettingController@store');
 
         Route::get('{song}/play/{transcode?}/{bitrate?}', 'SongController@play');

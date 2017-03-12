@@ -128,7 +128,7 @@ export default {
         self.songs = songs
 
         self.$nextTick(() => {
-          self.$refs.songList.sort()
+          // self.$refs.songList.sort()
         })
       }).catch(function() {
         console.log('Songs loading error')

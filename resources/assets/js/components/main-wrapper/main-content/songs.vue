@@ -64,7 +64,7 @@ export default {
         this.album = album
         */// #530
         this.$nextTick(() => {
-          this.$refs.songList.sort()
+          // this.$refs.songList.sort()
         })
       //}
     })

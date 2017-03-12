@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import { each, find, union, difference, take, filter, orderBy } from 'lodash'
-
+import { http } from '../services'
 import config from '../config'
 import stub from '../stubs/genre'
 
@@ -15,13 +15,12 @@ export const genreStore = {
 
   /**
    * Init the store.
-   *
-   * @param  {Array.<Object>} genres The array of genres we got from the server.
    */
-  init (genres) {
-    this.all = genres
-    each(genres, genre => {
-      this.setupGenre(genre)
+  init () {
+    return new Promise((resolve, reject) => {
+      http.get('genres', ({ data }) => {
+        resolve(data.genres)
+      }, error => reject(error))
     })
   },
 
@@ -64,7 +63,24 @@ export const genreStore = {
    * @param  {Number} id
    */
   byId (id) {
-    return find(this.all, { id })
+    return new Promise((resolve, reject) => {
+      http.get('genres/' + id, ({ data }) => {
+        resolve(data.genre)
+      }, error => reject(error))
+    })
+  },
+
+  /**
+   * Get songs by a genre object
+   *
+   * @param  {Object} genre
+   */
+  getSongs(genre) {
+    return new Promise((resolve, reject) => {
+      http.get('genres/' + genre.id + '/songs', ({ data }) => {
+        resolve(data.songs)
+      }, error => reject(error))
+    })
   },
 
   /**

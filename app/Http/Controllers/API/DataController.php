@@ -29,11 +29,7 @@ class DataController extends Controller
             $playlist['songs'] = array_pluck($playlist['songs'], 'id');
         }
 
-        // We don't need songs, the JavaScript code will figure this out
-        $genres = Genre::orderBy('name')->get()->toArray();
-
         return response()->json([
-            'genres' => $genres,
             'settings' => auth()->user()->is_admin ? Setting::pluck('value', 'key')->all() : [],
             'playlists' => $playlists,
             'interactions' => Interaction::byCurrentUser()->get(),

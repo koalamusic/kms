@@ -8,7 +8,7 @@
     <div class="genres main-scroll-wrap" :class="'as-'+viewMode" @scroll="scrolling">
       <genre-item v-for="item in displayedItems" :genre="item"/>
       <span class="item filler" v-for="n in 6"/>
-      <to-top-button :showing="showBackToTop"/>
+      <to-top-button/>
     </div>
   </section>
 </template>
@@ -26,17 +26,18 @@ export default {
 
   data () {
     return {
-      perPage: 9,
-      numOfItems: 9,
+      perPage: 100,
+      numOfItems: 100,
       q: '',
-      viewMode: null
+      viewMode: null,
+      datas: []
     }
   },
 
   computed: {
     displayedItems () {
       return limitBy(
-        filterBy(genreStore.all, this.q, 'name', 'genre.name'),
+        filterBy(this.datas, this.q, 'name', 'genre.name'),
         this.numOfItems
       )
     }
@@ -45,19 +46,24 @@ export default {
   methods: {
     changeViewMode (mode) {
       this.viewMode = mode
+    },
+    init() {
+      var self = this
+      genreStore.init().then(function(genres) {
+        self.datas = genres
+      }).catch(function() {
+        console.log("Genres loading error")
+      })
     }
   },
 
   created () {
-    event.on({
-      /**
-       * When the application is ready, load the first batch of items.
-       */
-      'koel:ready': () => this.displayMore(),
+    this.init(),
 
+    event.on({
       'koel:teardown': () => {
         this.q = ''
-        this.numOfItems = 9
+        this.numOfItems = 100
       },
 
       'filter:changed': q => {

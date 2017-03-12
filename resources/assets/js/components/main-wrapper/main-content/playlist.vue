@@ -76,7 +76,7 @@ export default {
         this.playlist = playlist
         // #530
         this.$nextTick(() => {
-          this.$refs.songList.sort()
+          //this.$refs.songList.sort()
         })
       }
     })

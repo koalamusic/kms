@@ -8,7 +8,7 @@
     <album v-show="view === 'album'"/>
     <artists v-if="view === 'artists'"/>
     <artist v-show="view === 'artist'"/>
-    <genres v-show="view === 'genres'"/>
+    <genres v-if="view === 'genres'"/>
     <genre v-show="view === 'genre'"/>
     <users v-show="view === 'users'"/>
     <settings v-show="view === 'settings'"/>

@@ -1,23 +1,17 @@
 <template>
-  <article class="item" v-if="genre.songs.length" draggable="true" @dragstart="dragStart">
-    <span class="cover" :style="{ backgroundImage: 'url('+genre.image+')' }">
-      <a class="control" @click.prevent="play">
-        <i class="fa fa-play"></i>
-      </a>
-    </span>
+  <article class="item" v-if="genre.songCount" draggable="true" @dragstart="dragStart">
     <footer>
       <div class="info">
         <a class="name" :href="'/#!/genre/'+genre.id">{{ genre.name }}</a>
       </div>
       <p class="meta">
         <span class="left">
-          <i class="nowrap">{{ genre.songs.length | pluralize('song') }}</i>
-          •
-          <i class="nowrap">{{ genre.fmtLength }}</i>
-          •
-          <i class="nowrap">{{ genre.playCount | pluralize('play') }}</i>
+          <i class="nowrap">{{ genre.songCount | pluralize('song') }}</i>
         </span>
         <span class="right">
+          <a class="control" @click.prevent="play">
+            <i class="fa fa-play"></i>
+          </a>
           <a href @click.prevent="shuffle" title="Shuffle">
             <i class="fa fa-random"></i>
           </a>
@@ -31,7 +25,7 @@
 import { map } from 'lodash'
 
 import { pluralize } from '../../utils'
-import { queueStore, sharedStore } from '../../stores'
+import { queueStore, sharedStore, genreStore } from '../../stores'
 import { playback } from '../../services'
 
 export default {
@@ -53,11 +47,15 @@ export default {
      * or queue them up if Ctrl/Cmd key is pressed.
      */
     play (e) {
-      if (e.metaKey || e.ctrlKey) {
-        queueStore.queue(this.genre.songs)
-      } else {
-        playback.playAllInAlbum(this.genre, false)
-      }
+      genreStore.getSongs(this.genre).then(function(songs) {
+        if (e.metaKey || e.ctrlKey) {
+          queueStore.queue(songs)
+        } else {
+          playback.queueAndPlay(songs, false)
+        }
+      }).catch(function() {
+        console.log('Songs loading error')
+      })
     },
 
     /**

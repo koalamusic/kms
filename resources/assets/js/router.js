@@ -40,10 +40,7 @@ export default {
     },
 
     '/genre/(\\d+)' (id) {
-      const genre = genreStore.byId(~~id)
-      if (genre) {
-        loadMainView('genre', genre)
-      }
+      loadMainView('genre', id)
     },
 
     '/favorites' () {

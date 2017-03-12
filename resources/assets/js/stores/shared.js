@@ -45,8 +45,6 @@ export const sharedStore = {
 
         userStore.init(this.state.users, this.state.currentUser)
         preferenceStore.init(this.state.preferences)
-        genreStore.init(this.state.genres) // Must be done before initializing songs.
-        // artistStore.init(this.state.artists) // This will init album and song stores as well.
         songStore.initInteractions(this.state.interactions)
         playlistStore.init(this.state.playlists)
         queueStore.init()

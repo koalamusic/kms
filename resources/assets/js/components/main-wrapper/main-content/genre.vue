@@ -2,7 +2,6 @@
   <section id="genreWrapper">
     <h1 class="heading">
       <span class="overview">
-        <img :src="genre.image" width="64" height="64" class="cover">
         {{ genre.name }}
         <controls-toggler :showing-controls="showingControls" @toggleControls="toggleControls"/>
 
@@ -14,7 +13,7 @@
       </span>
 
       <song-list-controls
-        v-show="genre.songs.length && (!isPhone || showingControls)"
+        v-show="genre.songCount && (!isPhone || showingControls)"
         @shuffleAll="shuffleAll"
         @shuffleSelected="shuffleSelected"
         :config="songListControlConfig"
@@ -22,7 +21,7 @@
       />
     </h1>
 
-    <song-list :items="genre.songs" type="genre"/>
+    <song-list :items="songs" type="genre"/>
 
   </section>
 </template>
@@ -47,11 +46,13 @@ export default {
       sharedState: sharedStore.state,
       genre: genreStore.stub,
       isPhone: isMobile.phone,
-      showingControls: false
+      showingControls: false,
+      songs: []
     }
   },
 
   computed: {
+
   },
 
   watch: {
@@ -61,7 +62,7 @@ export default {
      * and move all of them into another genre.
      * We should then go back to the genre list.
      */
-    'genre.songs.length' (newVal) {
+    'songs.length' (newVal) {
       if (!newVal) {
         router.go('genres')
       }
@@ -76,14 +77,34 @@ export default {
      * @param {String} view   The view name
      * @param {Object} genre  The genre object
      */
-    event.on('main-content-view:load', (view, genre) => {
+    event.on('main-content-view:load', (view, id) => {
       if (view === 'genre') {
-        this.genre = genre
+        this.init(id)
       }
     })
   },
 
   methods: {
+    init(id) {
+      if(id != 0) {
+        var self = this
+        genreStore.byId(id).then(function(genre) {
+          self.genre = genre
+
+          self.loadSongs()
+        }).catch(function() {
+          console.log("Genre loading error")
+        })
+      }
+    },
+    loadSongs() {
+      var self = this
+      genreStore.getSongs(this.genre).then(function (songs) {
+        self.songs = songs
+      }).catch(function () {
+        console.log('Songs loading error')
+      })
+    },
     /**
      * Shuffle the songs in the current genre.
      */
