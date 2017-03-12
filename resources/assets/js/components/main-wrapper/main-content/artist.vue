@@ -70,18 +70,13 @@ export default {
       info: {
         showing: false,
         loading: true
-      }
+      },
+      songs: []
     }
   },
 
   computed: {
-    songs () {
-      var songs = []
-      each(this.artist.albums, album => {
-        songs = songs.concat(album.songs)
-      })
-      return songs
-    }
+
   },
 
   watch: {
@@ -121,13 +116,23 @@ export default {
         artistStore.byId(id).then(function(artist) {
           self.artist = artist
 
-          self.$nextTick(() => {
-            self.$refs.songList.sort()
-          })
+          self.loadSongs()
         }).catch(function() {
           console.log("Album loading error")
         })
       }
+    },
+    loadSongs() {
+      var self = this
+      artistStore.getSongs(self.artist).then(function(songs) {
+        self.songs = songs
+
+        self.$nextTick(() => {
+          self.$refs.songList.sort()
+        })
+      }).catch(function() {
+        console.log('Songs loading error')
+      })
     },
     /**
      * Shuffle the songs by the current artist.

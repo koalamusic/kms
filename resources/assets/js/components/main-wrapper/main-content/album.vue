@@ -31,7 +31,7 @@
       </span>
 
       <song-list-controls
-        v-show="album.songs.length && (!isPhone || showingControls)"
+        v-show="album.songCount && (!isPhone || showingControls)"
         @shuffleAll="shuffleAll"
         @shuffleSelected="shuffleSelected"
         :config="songListControlConfig"
@@ -39,7 +39,7 @@
       />
     </h1>
 
-    <song-list :items="album.songs" type="album" ref="songList"/>
+    <song-list :items="songs" type="album" ref="songList"/>
 
     <section class="info-wrapper" v-if="sharedState.useLastfm && info.showing">
       <a href class="close" @click.prevent="info.showing = false"><i class="fa fa-times"></i></a>
@@ -73,7 +73,8 @@ export default {
       info: {
         showing: false,
         loading: true
-      }
+      },
+      songs: []
     }
   },
 
@@ -91,7 +92,7 @@ export default {
      * and move all of them into another album.
      * We should then go back to the album list.
      */
-    'album.songs.length' (newVal) {
+    'album.songCount' (newVal) {
       if (!newVal) {
         router.go('albums')
       }
@@ -121,13 +122,23 @@ export default {
         albumStore.byId(id).then(function(album) {
           self.album = album
 
-          self.$nextTick(() => {
-            self.$refs.songList.sort()
-          })
+          self.loadSongs()
         }).catch(function() {
           console.log("Album loading error")
         })
       }
+    },
+    loadSongs() {
+      var self = this
+      albumStore.getSongs(self.album).then(function(songs) {
+        self.songs = songs
+
+        self.$nextTick(() => {
+          self.$refs.songList.sort()
+        })
+      }).catch(function() {
+        console.log('Songs loading error')
+      })
     },
     /**
      * Shuffle the songs in the current album.
