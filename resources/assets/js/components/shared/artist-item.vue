@@ -57,11 +57,15 @@ export default {
      * Play all songs by the current artist, or queue them up if Ctrl/Cmd key is pressed.
      */
     play (e) {
-      if (e.metaKey || e.ctrlKey) {
-        queueStore.queue(this.artist.songs)
-      } else {
-        playback.playAllByArtist(this.artist, false)
-      }
+      artistStore.getSongs(this.artist).then(function(songs) {
+        if (e.metaKey || e.ctrlKey) {
+          queueStore.queue(songs)
+        } else {
+          playback.queueAndPlay(songs, false)
+        }
+      }).catch(function() {
+        console.log('Songs loading error')
+      })
     },
 
     /**

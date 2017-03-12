@@ -64,6 +64,14 @@ export const albumStore = {
     })
   },
 
+  getSongs(album) {
+    return new Promise((resolve, reject) => {
+      http.get('albums/' + album.id + '/songs', ({ data }) => {
+        resolve(data.songs)
+      }, error => reject(error))
+    })
+  },
+
   /**
    * Get the total length of an album by summing up its songs' duration.
    * The length will also be converted into a H:i:s format and stored as fmtLength.

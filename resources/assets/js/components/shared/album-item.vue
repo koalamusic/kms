@@ -1,5 +1,5 @@
 <template>
-  <article class="item" v-if="album.songs.length" draggable="true" @dragstart="dragStart">
+  <article class="item" v-if="album.songCount" draggable="true" @dragstart="dragStart">
     <span class="cover" :style="{ backgroundImage: 'url('+album.cover+')' }">
       <a class="control" @click.prevent="play">
         <i class="fa fa-play"></i>
@@ -16,7 +16,7 @@
         <span class="left">
           <i class="nowrap">{{ album.year }}</i>
           •
-          <i class="nowrap">{{ album.songs.length | pluralize('song') }}</i>
+          <i class="nowrap">{{ album.songCount | pluralize('song') }}</i>
           •
           <i class="nowrap">
             <i class="nowrap">{{ album.fmtLength }}</i>
@@ -41,7 +41,7 @@
 
 <script>
 import { pluralize } from '../../utils'
-import { queueStore, artistStore, sharedStore } from '../../stores'
+import { queueStore, artistStore, albumStore, sharedStore } from '../../stores'
 import { playback, download } from '../../services'
 
 export default {
@@ -69,11 +69,15 @@ export default {
      * or queue them up if Ctrl/Cmd key is pressed.
      */
     play (e) {
-      if (e.metaKey || e.ctrlKey) {
-        queueStore.queue(this.album.songs)
-      } else {
-        playback.playAllInAlbum(this.album, false)
-      }
+      albumStore.getSongs(this.album).then(function(songs) {
+        if (e.metaKey || e.ctrlKey) {
+          queueStore.queue(songs)
+        } else {
+          playback.queueAndPlay(songs, false)
+        }
+      }).catch(function() {
+        console.log('Songs loading error')
+      })
     },
 
     /**

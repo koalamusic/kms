@@ -31,6 +31,14 @@ export const artistStore = {
     })
   },
 
+  getSongs(artist) {
+    return new Promise((resolve, reject) => {
+      http.get('artists/' + artist.id + '/songs', ({ data }) => {
+        resolve(data.songs)
+      }, error => reject(error))
+    })
+  },
+
   /**
    * Set up the (reactive) properties of an artist.
    *

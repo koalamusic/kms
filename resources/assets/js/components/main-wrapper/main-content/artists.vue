@@ -83,6 +83,10 @@ export default {
         this.q = q
       }
     })
+  },
+
+  destroyed () {
+    this.datas = []
   }
 }
 </script>

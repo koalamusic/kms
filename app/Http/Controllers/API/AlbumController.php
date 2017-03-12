@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Models\Album;
 use App\Models\Interaction;
+use App\Models\Song;
 
 class AlbumController extends Controller
 {
@@ -28,7 +29,9 @@ class AlbumController extends Controller
 
         // Calculate playCount for each album
         $albums->each(function($album) {
+            $album['songCount'] = $album->songs->count();
             $album->calculatePlayCount();
+            unset($album['songs']);
         });
 
         return response()->json([
@@ -43,6 +46,19 @@ class AlbumController extends Controller
 
         return response()->json([
             'album' => $album
+        ]);
+    }
+
+    public function songs($id)
+    {
+        $songs = Song::with(['album', 'interactions', 'genre', 'album.artist', 'contributingArtist'])
+            ->where('album_id', '=', $id)
+            ->orderBy('album_id', 'asc')
+            ->orderBy('track', 'asc')
+            ->get();
+
+        return response()->json([
+            'songs' => $songs
         ]);
     }
 }

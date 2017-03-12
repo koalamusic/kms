@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Models\Artist;
+use App\Models\Song;
 
 class ArtistController extends Controller
 {
@@ -25,14 +26,9 @@ class ArtistController extends Controller
         // Calculate playCount for each album
         $artists->each(function($artist) {
             $artist->albums->each(function ($album) use ($artist) {
-                $playCount = $album->songs->reduce(function ($carry, $song) {
-                    if (!empty($song->interactions)) {
-                        return $carry + $song->interactions->play_count;
-                    } else
-                        return $carry + 0;
-                });
-                $album['playCount'] = !empty($playCount) ? $playCount : 0;
+                $album->calculatePlayCount();
                 $artist['songCount'] += $album->songs->count();
+                unset($album['songs']);
             });
         });
 
@@ -45,12 +41,28 @@ class ArtistController extends Controller
     {
         $artist = Artist::with(['albums', 'albums.songs', 'albums.songs.interactions'])->has('albums')->findOrFail($id);
         $artist->albums->each(function ($album) use ($artist) {
+            $album['songCount'] = $album->songs->count();
             $album->calculatePlayCount();
             $artist['songCount'] += $album->songs->count();
         });
 
         return response()->json([
             'artist' => $artist
+        ]);
+    }
+
+    public function songs($artistId)
+    {
+        $songs = Song::with(['album', 'interactions', 'genre', 'album.artist', 'contributingArtist'])
+            ->whereHas('album', function($query) use ($artistId) {
+                $query->where('artist_id', '=', $artistId);
+            })
+            ->orderBy('album_id', 'asc')
+            ->orderBy('track', 'asc')
+            ->get();
+
+        return response()->json([
+            'songs' => $songs
         ]);
     }
 }

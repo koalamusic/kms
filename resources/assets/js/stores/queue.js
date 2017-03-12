@@ -89,20 +89,33 @@ export const queueStore = {
    * @param {Boolean}         toTop   Whether to prepend or append to the queue
    */
   queue (songs, replace = false, toTop = false, play = false) {
-    var self = this
-    songStore.loadSongs(songs).then(function(songs) {
+    // Load from distant if not good datas
+    if(typeof songs[0].album == 'undefined') {
+      var self = this
+      songStore.loadSongs(songs).then(function(songs) {
+        if (replace) {
+          self.all = songs
+        } else {
+          self.all = toTop ? union(songs, self.all) : union(self.all, songs)
+        }
+
+        if(play) {
+          playback.playFirstInQueue()
+        }
+      }).catch(function() {
+        console.log("Songs for queue loading error")
+      })
+    } else {
       if (replace) {
-        self.all = songs
+        this.all = songs
       } else {
-        self.all = toTop ? union(songs, self.all) : union(self.all, songs)
+        this.all = toTop ? union(songs, this.all) : union(this.all, songs)
       }
 
       if(play) {
         playback.playFirstInQueue()
       }
-    }).catch(function() {
-      console.log("Songs for queue loading error")
-    })
+    }
   },
 
   /**
