@@ -44,7 +44,6 @@ export const albums = {
    * @return {Array.<Object>}
    */
   get all () {
-    console.log(this.datas.albums)
     return this.datas.albums
   },
 

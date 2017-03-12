@@ -117,7 +117,7 @@ export const playback = {
     this.player.media.src = songStore.getSourceUrl(song)
 
     document.title = `${song.title} ♫ ${config.appTitle}`
-    document.querySelector('.plyr audio').setAttribute('title', `${song.artist.name} - ${song.title}`)
+    document.querySelector('.plyr audio').setAttribute('title', `${song.album.artist.name} - ${song.title}`)
 
     // We'll just "restart" playing the song, which will handle notification, scrobbling etc.
     this.restart()
@@ -148,7 +148,7 @@ export const playback = {
     try {
       const notif = new window.Notification(`♫ ${song.title}`, {
         icon: song.album.cover,
-        body: `${song.album.name} – ${song.artist.name}`
+        body: `${song.album.name} – ${song.album.artist.name}`
       })
 
       notif.onclick = () => window.focus()

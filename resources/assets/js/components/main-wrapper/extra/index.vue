@@ -15,8 +15,8 @@
 
       <div class="panes">
         <lyrics :song="song" ref="lyrics" v-show="currentView === 'lyrics'"/>
-        <artist-info v-if="song.artist.id"
-          :artist="song.artist"
+        <artist-info v-if="song.album.artist.id"
+          :artist="song.album.artist"
           :mode="'sidebar'"
           ref="artist-info"
           v-show="currentView === 'artistInfo'"/>

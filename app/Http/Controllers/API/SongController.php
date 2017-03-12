@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Requests\API\SongUpdateRequest;
+use Illuminate\Http\Request;
 use App\Http\Streamers\PHPStreamer;
 use App\Http\Streamers\S3Streamer;
 use App\Http\Streamers\TranscodingStreamer;
@@ -13,6 +14,20 @@ use YouTube;
 
 class SongController extends Controller
 {
+    public function index(Request $request)
+    {
+        $songs = [];
+        if($request->has('ids')) {
+            $songs = Song::with(['album', 'interactions', 'genre', 'album.artist', 'contributingArtist'])
+                ->whereIn('id', $request->input('ids'))
+                ->orderByRaw('FIELD(id, "'.implode('","', $request->input('ids')).'")')
+                ->get();
+        }
+
+        return response()->json([
+            'songs' => $songs
+        ]);
+    }
     /**
      * Play/stream a song.
      *

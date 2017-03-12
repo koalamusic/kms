@@ -106,7 +106,7 @@ export default {
       return filterBy(
         this.songRows,
         this.q,
-        'song.title', 'song.album.name', 'song.artist.name'
+        'song.title', 'song.album.name', 'song.album.artist.name'
       )
     },
 

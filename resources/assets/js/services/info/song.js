@@ -16,7 +16,7 @@ export const songInfo = {
 
       http.get(`${song.id}/info`, response => {
         song.lyrics = response.data.lyrics
-        response.data.artist_info && artistInfo.merge(song.artist, response.data.artist_info)
+        response.data.artist_info && artistInfo.merge(song.album.artist, response.data.artist_info)
         response.data.album_info && albumInfo.merge(song.album, response.data.album_info)
         song.youtube = response.data.youtube
         song.infoRetrieved = true

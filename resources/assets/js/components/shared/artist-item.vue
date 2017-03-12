@@ -1,10 +1,5 @@
 <template>
   <article class="item" v-if="showing" draggable="true" @dragstart="dragStart">
-    <span class="cover" :style="{ backgroundImage: 'url('+artist.image+')' }">
-      <a class="control" @click.prevent="play">
-        <i class="fa fa-play"></i>
-      </a>
-    </span>
     <footer>
       <div class="info">
         <a class="name" :href="'/#!/artist/'+artist.id">{{ artist.name }}</a>
@@ -14,10 +9,11 @@
           <i class="nowrap">{{ artist.albums.length | pluralize('album') }}</i>
           •
           <i class="nowrap">{{ artist.songCount | pluralize('song') }}</i>
-          •
-          <i class="nowrap">{{ artist.playCount | pluralize('play') }}</i>
         </span>
         <span class="right">
+          <a class="control" @click.prevent="play">
+            <i class="fa fa-play"></i>
+          </a>
           <a href @click.prevent="download" v-if="sharedState.allowDownload" title="Download all songs by artist">
             <i class="fa fa-download"></i>
           </a>
@@ -51,7 +47,8 @@ export default {
      * @return {Boolean}
      */
     showing () {
-      return this.artist.songCount && !artistStore.isVariousArtists(this.artist)
+      return true
+      //return this.artist.songCount && !artistStore.isVariousArtists(this.artist)
     }
   },
 

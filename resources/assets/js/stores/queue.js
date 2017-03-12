@@ -1,4 +1,5 @@
 import { head, last, each, includes, union, difference, map, shuffle as _shuffle, first } from 'lodash'
+import { songStore } from '.'
 
 export const queueStore = {
   state: {
@@ -87,13 +88,16 @@ export const queueStore = {
    * @param {Boolean}         toTop   Whether to prepend or append to the queue
    */
   queue (songs, replace = false, toTop = false) {
-    songs = [].concat(songs)
-
-    if (replace) {
-      this.all = songs
-    } else {
-      this.all = toTop ? union(songs, this.all) : union(this.all, songs)
-    }
+    var self = this
+    songStore.loadSongs(songs).then(function(songs) {
+      if (replace) {
+        self.all = songs
+      } else {
+        self.all = toTop ? union(songs, self.all) : union(self.all, songs)
+      }
+    }).catch(function() {
+      console.log("Songs for queue loading error")
+    })
   },
 
   /**
