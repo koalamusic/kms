@@ -2,7 +2,7 @@
 
 import Vue from 'vue'
 import { reduce, each, union, difference, take, filter, orderBy } from 'lodash'
-
+import { http } from '../services'
 import config from '../config'
 import stub from '../stubs/artist'
 import { albumStore } from '.'
@@ -14,21 +14,29 @@ export const artistStore = {
   stub,
   cache: [],
 
-  state: {
+  datas: {
     artists: []
   },
 
   /**
    * Init the store.
    *
-   * @param  {Array.<Object>} artists The array of artists we got from the server.
+   * @param  {Array.<Object>} artists The array of artists to extract album data from.
    */
-  init (artists) {
-    this.all = artists
+  init () {
+    return new Promise((resolve, reject) => {
+      http.get('artists', ({ data }) => {
+        resolve(data.artists)
+      }, error => reject(error))
+    })
+  },
 
-    // Traverse through artists array to get the cover and number of songs for each.
-    each(this.all, artist => this.setupArtist(artist))
-    albumStore.init(this.all)
+  getSongs(artist) {
+    return new Promise((resolve, reject) => {
+      http.get('artists/' + artist.id + '/songs', ({ data }) => {
+        resolve(data.songs)
+      }, error => reject(error))
+    })
   },
 
   /**
@@ -66,7 +74,7 @@ export const artistStore = {
    * @return {Array.<Object>}
    */
   get all () {
-    return this.state.artists
+    return this.datas.artists
   },
 
   /**
@@ -75,7 +83,7 @@ export const artistStore = {
    * @param  {Array.<Object>} value
    */
   set all (value) {
-    this.state.artists = value
+    this.datas.artists = value
   },
 
   /**
@@ -84,7 +92,11 @@ export const artistStore = {
    * @param  {Number} id
    */
   byId (id) {
-    return this.cache[id]
+    return new Promise((resolve, reject) => {
+      http.get('artists/' + id, ({ data }) => {
+        resolve(data.artist)
+      }, error => reject(error))
+    })
   },
 
   /**

@@ -1,8 +1,8 @@
 /*eslint camelcase: ["error", {properties: "never"}]*/
 
 import Vue from 'vue'
-import { reduce, each, union, difference, take, filter, orderBy } from 'lodash'
-
+import { reduce, each, union, difference, take, filter, orderBy, assign } from 'lodash'
+import { http } from '../services'
 import { secondsToHis } from '../utils'
 import stub from '../stubs/album'
 import { songStore, artistStore } from '.'
@@ -11,7 +11,7 @@ export const albumStore = {
   stub,
   cache: [],
 
-  state: {
+  datas: {
     albums: [stub]
   },
 
@@ -20,17 +20,12 @@ export const albumStore = {
    *
    * @param  {Array.<Object>} artists The array of artists to extract album data from.
    */
-  init (artists) {
-    // Traverse through the artists array and add their albums into our master album list.
-    this.all = reduce(artists, (albums, artist) => {
-      // While we're doing so, for each album, we get its length
-      // and keep a back reference to the artist too.
-      each(artist.albums, album => this.setupAlbum(album, artist))
-      return albums.concat(artist.albums)
-    }, [])
-
-    // Then we init the song store.
-    songStore.init(this.all)
+  init () {
+    return new Promise((resolve, reject) => {
+      http.get('albums', ({ data }) => {
+        resolve(data.albums)
+      }, error => reject(error))
+    })
   },
 
   setupAlbum (album, artist) {
@@ -49,7 +44,7 @@ export const albumStore = {
    * @return {Array.<Object>}
    */
   get all () {
-    return this.state.albums
+    return this.datas.albums
   },
 
   /**
@@ -58,11 +53,23 @@ export const albumStore = {
    * @param  {Array.<Object>} value
    */
   set all (value) {
-    this.state.albums = value
+    this.datas = value
   },
 
   byId (id) {
-    return this.cache[id]
+    return new Promise((resolve, reject) => {
+      http.get('albums/' + id, ({ data }) => {
+        resolve(data.album)
+      }, error => reject(error))
+    })
+  },
+
+  getSongs(album) {
+    return new Promise((resolve, reject) => {
+      http.get('albums/' + album.id + '/songs', ({ data }) => {
+        resolve(data.songs)
+      }, error => reject(error))
+    })
   },
 
   /**
