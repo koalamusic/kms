@@ -17,4 +17,27 @@ class ArtistController extends Controller
     {
         return response()->json($artist->getInfo());
     }
+
+    public function index()
+    {
+        $artists = Artist::with(['albums', 'albums.songs', 'albums.songs.interactions'])->has('albums')->get();
+
+        // Calculate playCount for each album
+        $artists->each(function($artist) {
+            $artist->albums->each(function ($album) use ($artist) {
+                $playCount = $album->songs->reduce(function ($carry, $song) {
+                    if (!empty($song->interactions)) {
+                        return $carry + $song->interactions->play_count;
+                    } else
+                        return $carry + 0;
+                });
+                $album['playCount'] = !empty($playCount) ? $playCount : 0;
+                $artist['songCount'] += $album->songs->count();
+            });
+        });
+
+        return response()->json([
+            'artists' => $artists
+        ]);
+    }
 }

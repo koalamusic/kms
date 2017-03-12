@@ -17,7 +17,7 @@
 
 <script>
 import { filterBy, limitBy, orderBy, event } from '../../../utils'
-import { albumStore, albums } from '../../../stores'
+import { albums } from '../../../stores'
 import albumItem from '../../shared/album-item.vue'
 import viewModeSwitch from '../../shared/view-mode-switch.vue'
 import sortModeSwitch from '../../shared/sort-mode-switch.vue'
@@ -76,6 +76,7 @@ export default {
 
   created () {
     this.init()
+
     event.on({
       'filter:changed': q => {
         this.q = q

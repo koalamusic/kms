@@ -17,7 +17,7 @@
 
 <script>
 import { filterBy, limitBy, orderBy, event } from '../../../utils'
-import { artistStore } from '../../../stores'
+import { artists } from '../../../stores'
 
 import artistItem from '../../shared/artist-item.vue'
 import viewModeSwitch from '../../shared/view-mode-switch.vue'
@@ -39,17 +39,14 @@ export default {
         key: null,
         reverse: false
       },
-      datas: [],
-      reload: true
+      datas: []
     }
   },
 
   computed: {
     displayedItems () {
-      this.loadItems()
-
       return limitBy(
-        this.datas,
+        filterBy(this.datas, this.q, 'name'),
         this.numOfItems
       )
     }
@@ -62,28 +59,28 @@ export default {
     changeSortMode (sort, reverse = false) {
       this.sorting.key = sort
       this.sorting.reverse = reverse
-      this.reload = true
+      this.sortItems()
     },
-    loadItems(force = false) {
-      if(this.reload || force) {
-        this.datas = filterBy(artistStore.all, this.q, 'name')
-        this.datas = orderBy(this.datas, this.sorting.key, this.sorting.reverse)
-
-        this.reload = false
-      }
+    sortItems() {
+      this.datas = orderBy(this.datas, this.sorting.key, this.sorting.reverse)
+    },
+    init() {
+      var self = this
+      artists.init().then(function(artists) {
+        self.datas = artists
+        self.sortItems()
+      }).catch(function() {
+        console.log("Artists loading error")
+      })
     }
   },
 
   created () {
-    event.on({
-      /**
-       * When the application is ready, load the first batch of items.
-       */
-      'koel:ready': () => this.loadItems(true),
+    this.init()
 
+    event.on({
       'filter:changed': q => {
-        this.q = q,
-        this.reload = true
+        this.q = q
       }
     })
   }
