@@ -17,7 +17,7 @@
 
 <script>
 import { filterBy, limitBy, orderBy, event } from '../../../utils'
-import { albums } from '../../../stores'
+import { albumStore } from '../../../stores'
 import albumItem from '../../shared/album-item.vue'
 import viewModeSwitch from '../../shared/view-mode-switch.vue'
 import sortModeSwitch from '../../shared/sort-mode-switch.vue'
@@ -65,7 +65,7 @@ export default {
     },
     init() {
       var self = this
-      albums.init().then(function(albums) {
+      albumStore.init().then(function(albums) {
         self.datas = albums
         self.sortItems()
       }).catch(function() {

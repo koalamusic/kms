@@ -16,11 +16,15 @@ class SongController extends Controller
 {
     public function index(Request $request)
     {
-        $songs = [];
         if($request->has('ids')) {
             $songs = Song::with(['album', 'interactions', 'genre', 'album.artist', 'contributingArtist'])
                 ->whereIn('id', $request->input('ids'))
                 ->orderByRaw('FIELD(id, "'.implode('","', $request->input('ids')).'")')
+                ->get();
+        } else {
+            $songs = Song::with(['album', 'interactions', 'genre', 'album.artist', 'contributingArtist'])
+                ->orderBy('album_id', 'asc')
+                ->orderBy('track', 'asc')
                 ->get();
         }
 

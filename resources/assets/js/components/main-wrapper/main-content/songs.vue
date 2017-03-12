@@ -12,7 +12,7 @@
       </span>
 
       <song-list-controls
-        v-show="state.songs.length && (!isPhone || showingControls)"
+        v-show="datas.length && (!isPhone || showingControls)"
         @shuffleAll="shuffleAll"
         @shuffleSelected="shuffleSelected"
         :config="songListControlConfig"
@@ -20,7 +20,7 @@
       />
     </h1>
 
-    <song-list :items="state.songs" type="allSongs" ref="songList"/>
+    <song-list :items="datas" type="allSongs" ref="songList"/>
   </section>
 </template>
 
@@ -36,10 +36,21 @@ export default {
 
   data () {
     return {
-      state: songStore.state
+      datas: []
+    }
+  },
+  methods: {
+    init() {
+      var self = this
+      songStore.init().then(function(songs) {
+        self.datas = songs
+      }).catch(function() {
+        console.log("Songs loading error")
+      })
     }
   },
   created () {
+    this.init()
     /**
      * Listen to 'main-content-view:load' event to load the requested album
      * into view if applicable.

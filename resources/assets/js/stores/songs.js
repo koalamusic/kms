@@ -33,15 +33,12 @@ export const songStore = {
    *
    * @param  {Array.<Object>} albums The array of albums to extract our songs from
    */
-  init (albums) {
-    // Iterate through the albums. With each, add its songs into our master song list.
-    // While doing so, we populate some other information into the songs as well.
-    this.all = albums.reduce((songs, album) => {
-      each(album.songs, song => this.setupSong(song, album))
-      return songs.concat(album.songs)
-    }, [])
-
-    this.state.recentlyPlayed = this.gatherRecentlyPlayedFromLocalStorage()
+  init() {
+    return new Promise((resolve, reject) => {
+      http.get('songs', ({ data }) => {
+        resolve(data.songs)
+      }, error => reject(error))
+    })
   },
 
   loadSongs(songs) {
@@ -106,7 +103,7 @@ export const songStore = {
       song.liked = interaction.liked
       song.playCount = interaction.play_count
       song.album.playCount += song.playCount
-      song.artist.playCount += song.playCount
+      //song.artist.playCount += song.playCount
 
       if (song.liked) {
         favoriteStore.add(song)
@@ -202,7 +199,7 @@ export const songStore = {
         // Use the data from the server to make sure we don't miss a play from another device.
         song.playCount = data.play_count
         song.album.playCount += song.playCount - oldCount
-        song.artist.playCount += song.playCount - oldCount
+        //song.artist.playCount += song.playCount - oldCount
 
         resolve(data)
       }, error => reject(error))
@@ -286,7 +283,7 @@ export const songStore = {
 
     // and keep track of original album/artist.
     const originalAlbumId = originalSong.album.id
-    const originalArtistId = originalSong.artist.id
+    const originalArtistId = originalSong.album.artist.id
     const originalGenreId = originalSong.genre.id
 
     // First, we update the title, lyrics, and track #
@@ -331,7 +328,7 @@ export const songStore = {
         const existingArtist = artistStore.byId(updatedSong.album.artist.id)
 
         if (existingArtist) {
-          originalSong.artist = existingArtist
+          originalSong.album.artist = existingArtist
         } else {
           // New artist created. We:
           // - Add the album into it, because now it MUST BE a new album
@@ -339,7 +336,7 @@ export const songStore = {
           // - Add the new artist into our collection
           artistStore.addAlbumsIntoArtist(updatedSong.album.artist, updatedSong.album)
           artistStore.add(updatedSong.album.artist)
-          originalSong.artist = updatedSong.album.artist
+          originalSong.album.artist = updatedSong.album.artist
         }
       }
 

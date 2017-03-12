@@ -1,5 +1,6 @@
 import { head, last, each, includes, union, difference, map, shuffle as _shuffle, first } from 'lodash'
 import { songStore } from '.'
+import { playback } from '../services'
 
 export const queueStore = {
   state: {
@@ -87,13 +88,17 @@ export const queueStore = {
    * @param {Boolean}         replace Whether to replace the current queue
    * @param {Boolean}         toTop   Whether to prepend or append to the queue
    */
-  queue (songs, replace = false, toTop = false) {
+  queue (songs, replace = false, toTop = false, play = false) {
     var self = this
     songStore.loadSongs(songs).then(function(songs) {
       if (replace) {
         self.all = songs
       } else {
         self.all = toTop ? union(songs, self.all) : union(self.all, songs)
+      }
+
+      if(play) {
+        playback.playFirstInQueue()
       }
     }).catch(function() {
       console.log("Songs for queue loading error")

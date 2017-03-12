@@ -1,4 +1,4 @@
-import { shuffle, orderBy } from 'lodash'
+import { shuffle, orderBy, each } from 'lodash'
 import plyr from 'plyr'
 import Vue from 'vue'
 
@@ -328,21 +328,17 @@ export const playback = {
       songs = songStore.all
     }
 
-    if (!songs.length) {
-      return
-    }
-
     if (shuffled) {
       songs = shuffle(songs)
     }
 
-    queueStore.queue(songs, true)
+    queueStore.queue(songs, true, false, true)
 
     // Wrap this inside a nextTick() to wait for the DOM to complete updating
     // and then play the first song in the queue.
     Vue.nextTick(() => {
       router.go('queue')
-      this.play(queueStore.first)
+      //this.play(queueStore.first)
     })
   },
 
@@ -367,12 +363,17 @@ export const playback = {
    * @param  {Boolean=true}   shuffled Whether to shuffle the songs
    */
   playAllByArtist (artist, shuffled = true) {
+    var songs = []
+    each(artist.albums, album => {
+      songs = songs.concat(album.songs)
+    })
+
     if (!shuffled) {
-      this.queueAndPlay(orderBy(artist.songs, 'album_id', 'track'))
+      this.queueAndPlay(orderBy(songs, ['album_id', 'track']))
       return
     }
 
-    this.queueAndPlay(artist.songs, true)
+    this.queueAndPlay(songs, true)
   },
 
   /**

@@ -106,19 +106,29 @@ export default {
      * @param {String} view   The view name
      * @param {Object} album  The album object
      */
-    event.on('main-content-view:load', (view, album) => {
+    event.on('main-content-view:load', (view, id) => {
       if (view === 'album') {
         this.info.showing = false
-        this.album = album
-        // #530
-        this.$nextTick(() => {
-          this.$refs.songList.sort()
-        })
+        this.init(id)
       }
     })
   },
 
   methods: {
+    init(id) {
+      if(id != 0) {
+        var self = this
+        albumStore.byId(id).then(function(album) {
+          self.album = album
+
+          self.$nextTick(() => {
+            self.$refs.songList.sort()
+          })
+        }).catch(function() {
+          console.log("Album loading error")
+        })
+      }
+    },
     /**
      * Shuffle the songs in the current album.
      * Overriding the mixin.

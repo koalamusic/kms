@@ -40,4 +40,17 @@ class ArtistController extends Controller
             'artists' => $artists
         ]);
     }
+
+    public function show($id)
+    {
+        $artist = Artist::with(['albums', 'albums.songs', 'albums.songs.interactions'])->has('albums')->findOrFail($id);
+        $artist->albums->each(function ($album) use ($artist) {
+            $album->calculatePlayCount();
+            $artist['songCount'] += $album->songs->count();
+        });
+
+        return response()->json([
+            'artist' => $artist
+        ]);
+    }
 }

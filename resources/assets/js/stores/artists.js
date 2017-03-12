@@ -10,7 +10,7 @@ import { albumStore } from '.'
 const UNKNOWN_ARTIST_ID = 1
 const VARIOUS_ARTISTS_ID = 2
 
-export const artists = {
+export const artistStore = {
   stub,
   cache: [],
 
@@ -84,7 +84,11 @@ export const artists = {
    * @param  {Number} id
    */
   byId (id) {
-    return this.cache[id]
+    return new Promise((resolve, reject) => {
+      http.get('artists/' + id, ({ data }) => {
+        resolve(data.artist)
+      }, error => reject(error))
+    })
   },
 
   /**

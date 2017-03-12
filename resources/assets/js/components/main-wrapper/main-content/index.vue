@@ -3,10 +3,10 @@
     <div class="translucent" :style="{ backgroundImage: albumCover ? 'url('+albumCover+')' : 'none' }"></div>
     <home v-show="view === 'home'"/>
     <queue v-show="view === 'queue'"/>
-    <songs v-show="view === 'songs'"/>
+    <songs v-if="view === 'songs'"/>
     <albums v-if="view === 'albums'"/>
     <album v-show="view === 'album'"/>
-    <artists v-show="view === 'artists'"/>
+    <artists v-if="view === 'artists'"/>
     <artist v-show="view === 'artist'"/>
     <genres v-show="view === 'genres'"/>
     <genre v-show="view === 'genre'"/>

@@ -10,8 +10,8 @@ Route::group(['namespace' => 'API'], function () {
         });
 
         Route::get('data', 'DataController@index');
-        Route::get('albums', 'AlbumController@index');
-        Route::get('artists', 'ArtistController@index');
+        Route::resource('albums', 'AlbumController');
+        Route::resource('artists', 'ArtistController');
         Route::any('songs', 'SongController@index');
 
         Route::post('settings', 'SettingController@store');

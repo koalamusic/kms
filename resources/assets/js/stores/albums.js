@@ -7,7 +7,7 @@ import { secondsToHis } from '../utils'
 import stub from '../stubs/album'
 import { songStore, artistStore } from '.'
 
-export const albums = {
+export const albumStore = {
   stub,
   cache: [],
 
@@ -57,7 +57,11 @@ export const albums = {
   },
 
   byId (id) {
-    return this.cache[id]
+    return new Promise((resolve, reject) => {
+      http.get('albums/' + id, ({ data }) => {
+        resolve(data.album)
+      }, error => reject(error))
+    })
   },
 
   /**

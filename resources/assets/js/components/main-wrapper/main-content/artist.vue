@@ -2,7 +2,6 @@
   <section id="artistWrapper">
     <h1 class="heading">
       <span class="overview">
-        <img :src="artist.image" width="64" height="64" class="cover">
         {{ artist.name }}
         <controls-toggler :showing-controls="showingControls" @toggleControls="toggleControls"/>
 
@@ -28,7 +27,7 @@
       </span>
 
       <song-list-controls
-        v-show="artist.songs.length && (!isPhone || showingControls)"
+        v-show="(!isPhone || showingControls)"
         @shuffleAll="shuffleAll"
         @shuffleSelected="shuffleSelected"
         :config="songListControlConfig"
@@ -36,7 +35,7 @@
       />
     </h1>
 
-    <song-list :items="artist.songs" type="artist" ref="songList"/>
+    <song-list :items="songs" type="artist" ref="songList"/>
 
     <section class="info-wrapper" v-if="sharedState.useLastfm && info.showing">
       <a href class="close" @click.prevent="info.showing = false"><i class="fa fa-times"></i></a>
@@ -50,6 +49,7 @@
 
 <script>
 import { pluralize, event } from '../../../utils'
+import { each } from 'lodash'
 import { sharedStore, artistStore } from '../../../stores'
 import { playback, download, artistInfo as artistInfoService } from '../../../services'
 import router from '../../../router'
@@ -71,6 +71,16 @@ export default {
         showing: false,
         loading: true
       }
+    }
+  },
+
+  computed: {
+    songs () {
+      var songs = []
+      each(this.artist.albums, album => {
+        songs = songs.concat(album.songs)
+      })
+      return songs
     }
   },
 
@@ -96,19 +106,29 @@ export default {
      * @param {String} view   The view's name
      * @param {Object} artist
      */
-    event.on('main-content-view:load', (view, artist) => {
+    event.on('main-content-view:load', (view, id) => {
       if (view === 'artist') {
         this.info.showing = false
-        this.artist = artist
-        // #530
-        this.$nextTick(() => {
-          this.$refs.songList.sort()
-        })
+        this.init(id)
       }
     })
   },
 
   methods: {
+    init(id) {
+      if(id != 0) {
+        var self = this
+        artistStore.byId(id).then(function(artist) {
+          self.artist = artist
+
+          self.$nextTick(() => {
+            self.$refs.songList.sort()
+          })
+        }).catch(function() {
+          console.log("Album loading error")
+        })
+      }
+    },
     /**
      * Shuffle the songs by the current artist.
      * Overriding the mixin.

@@ -74,7 +74,8 @@ export default {
       order: 1,
       sortingByAlbum: false,
       sortingByArtist: false,
-      songRows: []
+      songRows: [],
+      songs: []
     }
   },
 
@@ -83,17 +84,23 @@ export default {
      * Watch the items.
      */
     items () {
-      if (this.sortable === false) {
-        this.sortKey = ''
-      }
+      this.songRows = []
+      var self = this
+      songStore.loadSongs(this.items).then(function(songs) {
+        if (self.sortable === false) {
+          self.sortKey = ''
+        }
 
-      // Update the song count and duration status on parent.
-      this.$parent.updateMeta({
-        songCount: this.items.length,
-        totalLength: songStore.getLength(this.items, true)
+        // Update the song count and duration status on parent.
+        self.$parent.updateMeta({
+          songCount: self.items.length,
+          totalLength: songStore.getLength(self.items, true)
+        })
+
+        self.generateSongRows(songs)
+      }).catch(function() {
+        console.log('Songs loading error')
       })
-
-      this.generateSongRows()
     },
 
     selectedSongs (val) {
@@ -135,12 +142,12 @@ export default {
      * objects, with each object contain the song itself, and the "selected" flag. In order to
      * comply with virtual-scroller, a "type" attribute also presents.
      */
-    generateSongRows () {
+    generateSongRows (songs) {
       // Since this method re-generates the song wrappers, we need to keep track of  the
       // selected songs manually.
       const selectedSongIds = this.selectedSongs.map(song => song.id)
 
-      this.songRows = this.items.map(song => {
+      this.songRows = songs.map(song => {
         return {
           song,
           selected: selectedSongIds.indexOf(song.id) > -1,
@@ -163,7 +170,7 @@ export default {
         this.sortKey = key
         this.order *= -1
       }
-console.log(key)
+
       this.sortingByAlbum = Array.isArray(this.sortKey) && this.sortKey[0] === 'song.album.name'
       this.sortingByArtist = Array.isArray(this.sortKey) && this.sortKey[0] === 'song.album.artist.name'
       this.songRows = orderBy(this.songRows, this.sortKey, this.order)

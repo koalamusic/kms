@@ -218,4 +218,15 @@ class Album extends Model
     {
         return $this->artist_id === Artist::VARIOUS_ID;
     }
+
+    public function calculatePlayCount()
+    {
+        $playCount = $this->songs->reduce(function($carry, $song) {
+            if(!empty($song->interactions)) {
+                return $carry + $song->interactions->play_count;
+            } else
+                return $carry + 0;
+        });
+        $this['playCount'] = !empty($playCount) ? $playCount : 0;
+    }
 }

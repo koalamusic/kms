@@ -24,14 +24,15 @@ export default {
     },
 
     '/album/(\\d+)' (id) {
-      const album = albumStore.byId(~~id)
-      if (album) {
-        loadMainView('album', album)
-      }
+      loadMainView('album', id)
     },
 
     '/artists' () {
       loadMainView('artists')
+    },
+
+    '/artist/(\\d+)' (id) {
+      loadMainView('artist', id)
     },
 
     '/genres' () {
@@ -42,13 +43,6 @@ export default {
       const genre = genreStore.byId(~~id)
       if (genre) {
         loadMainView('genre', genre)
-      }
-    },
-
-    '/artist/(\\d+)' (id) {
-      const artist = artistStore.byId(~~id)
-      if (artist) {
-        loadMainView('artist', artist)
       }
     },
 
