@@ -85,22 +85,17 @@ export default {
      */
     items () {
       this.songRows = []
-      var self = this
-      songStore.loadSongs(this.items).then(function(songs) {
-        if (self.sortable === false) {
-          self.sortKey = ''
-        }
+      if (this.sortable === false) {
+        this.sortKey = ''
+      }
 
-        // Update the song count and duration status on parent.
-        self.$parent.updateMeta({
-          songCount: self.items.length,
-          totalLength: songStore.getLength(self.items, true)
-        })
-
-        self.generateSongRows(songs)
-      }).catch(function() {
-        console.log('Songs loading error')
+      // Update the song count and duration status on parent.
+      this.$parent.updateMeta({
+        songCount: this.items.length,
+        totalLength: songStore.getLength(this.items, true)
       })
+
+      this.generateSongRows()
     },
 
     selectedSongs (val) {
@@ -142,12 +137,12 @@ export default {
      * objects, with each object contain the song itself, and the "selected" flag. In order to
      * comply with virtual-scroller, a "type" attribute also presents.
      */
-    generateSongRows (songs) {
+    generateSongRows () {
       // Since this method re-generates the song wrappers, we need to keep track of  the
       // selected songs manually.
       const selectedSongIds = this.selectedSongs.map(song => song.id)
 
-      this.songRows = songs.map(song => {
+      this.songRows = this.items.map(song => {
         return {
           song,
           selected: selectedSongIds.indexOf(song.id) > -1,
