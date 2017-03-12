@@ -19,6 +19,9 @@ class ArtistController extends Controller
         return response()->json($artist->getInfo());
     }
 
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index()
     {
         $artists = Artist::with(['albums', 'albums.songs', 'albums.songs.interactions'])->has('albums')->get();
@@ -37,6 +40,10 @@ class ArtistController extends Controller
         ]);
     }
 
+    /**
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function show($id)
     {
         $artist = Artist::with(['albums', 'albums.songs', 'albums.songs.interactions'])->has('albums')->findOrFail($id);
@@ -44,6 +51,7 @@ class ArtistController extends Controller
             $album['songCount'] = $album->songs->count();
             $album->calculatePlayCount();
             $artist['songCount'] += $album->songs->count();
+            unset($album['songs']);
         });
 
         return response()->json([
@@ -51,6 +59,10 @@ class ArtistController extends Controller
         ]);
     }
 
+    /**
+     * @param $artistId
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function songs($artistId)
     {
         $songs = Song::with(['album', 'interactions', 'genre', 'album.artist', 'contributingArtist'])

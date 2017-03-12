@@ -39,16 +39,25 @@ class AlbumController extends Controller
         ]);
     }
 
+    /**
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function show($id)
     {
         $album = Album::with(['artist', 'songs', 'songs.interactions'])->findOrFail($id);
         $album->calculatePlayCount();
+        unset($album['songs']);
 
         return response()->json([
             'album' => $album
         ]);
     }
 
+    /**
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function songs($id)
     {
         $songs = Song::with(['album', 'interactions', 'genre', 'album.artist', 'contributingArtist'])
