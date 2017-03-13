@@ -11,7 +11,7 @@
 
           <ol class="top-song-list">
             <li v-for="song in top.songs"
-              :top-play-count="top.songs.length ? top.songs[0].playCount : 0"
+              :top-play-count="top.songs.length ? top.songs[0].interactions.play_count : 0"
               :song="song"
               is="song-item"/>
           </ol>
@@ -22,7 +22,7 @@
 
           <ol class="recent-song-list" v-show="recentSongs.length">
             <li v-for="song in recentSongs"
-              :top-play-count="top.songs.length ? top.songs[0].playCount : 0"
+              :top-play-count="top.songs.length ? top.songs[0].interactions.play_count : 0"
               :song="song"
               is="song-item"/>
           </ol>
@@ -77,7 +77,7 @@
 import { sample } from 'lodash'
 
 import { event } from '../../../utils'
-import { songStore, albumStore, artistStore, userStore, preferenceStore } from '../../../stores'
+import { songStore, homeStore, artistStore, userStore, preferenceStore } from '../../../stores'
 import infiniteScroll from '../../../mixins/infinite-scroll'
 
 import albumItem from '../../shared/album-item.vue'
@@ -141,14 +141,23 @@ export default {
       this.recentlyAdded.albums = albumStore.getRecentlyAdded(6)
       this.recentlyAdded.songs = songStore.getRecentlyAdded(10)
       this.recentSongs = songStore.recentlyPlayed
+    },
+    init() {
+      var self = this
+      homeStore.init().then(function(datas) {
+          self.recentSongs = datas.recentSongs
+          self.top = datas.top
+          self.recentlyAdded = datas.recentlyAdded
+      }).catch(function() {
+          console.log("Home loading error")
+      })
     }
   },
 
   created () {
+    this.init()
     event.on({
-      'koel:ready': () => this.refreshDashboard(),
-
-      'song:played': () => this.refreshDashboard()
+      //'song:played': () => this.refreshDashboard()
     })
   }
 }

@@ -11,6 +11,9 @@ Route::group(['namespace' => 'API'], function () {
 
         Route::get('data', 'DataController@index');
 
+        // Home.
+        Route::resource('home', 'HomeController');
+
         // Albums.
         Route::get('albums/{id}/songs', 'AlbumController@songs');
         Route::resource('albums', 'AlbumController');

@@ -1,7 +1,7 @@
 <template>
   <section id="mainContent">
     <div class="translucent" :style="{ backgroundImage: albumCover ? 'url('+albumCover+')' : 'none' }"></div>
-    <home v-show="view === 'home'"/>
+    <home v-if="view === 'home'"/>
     <queue v-show="view === 'queue'"/>
     <songs v-if="view === 'songs'"/>
     <albums v-if="view === 'albums'"/>

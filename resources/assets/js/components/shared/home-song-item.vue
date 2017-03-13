@@ -10,11 +10,11 @@
       </a>
     </span>
     <span class="details">
-      <span v-if="showPlayCount" :style="{ width: song.playCount*100/topPlayCount+'%' }" class="play-count"/>
+      <span v-if="showPlayCount" :style="{ width: song.interactions.play_count * 100 / topPlayCount+'%' }" class="play-count"/>
       {{ song.title }}
       <span class="by">
         <a :href="'/#!/artist/'+song.album.artist.id">{{ song.album.artist.name }}</a>
-        <template v-if="showPlayCount">- {{ song.playCount | pluralize('play') }}</template>
+        <template v-if="showPlayCount">- {{ song.interactions.play_count | pluralize('play') }}</template>
       </span>
     </span>
   </li>
@@ -32,7 +32,7 @@ export default {
 
   computed: {
     showPlayCount () {
-      return this.topPlayCount && this.song.playCount
+      return this.topPlayCount && this.song.interactions.play_count
     }
   },
 
