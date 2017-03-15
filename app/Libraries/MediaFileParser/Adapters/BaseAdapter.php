@@ -2,6 +2,8 @@
 
 namespace App\Libraries\MediaFileParser\Adapters;
 
+use Illuminate\Support\Arr;
+
 /**
  * Class BaseAdapter
  * @package App\Libraries\MediaFileParser\Adapters
@@ -51,4 +53,30 @@ abstract class BaseAdapter
      * @return int
      */
     abstract public function guessYear();
+
+    /**
+     * @return float|null
+     */
+    public function guessDuration()
+    {
+        return $this->getTag('playtime_seconds');
+    }
+
+    /**
+     * @param $key
+     * @param null $default
+     * @return mixed|null
+     */
+    public function getTag($key, $default = null)
+    {
+        return Arr::get($this->tags, $key, $default);
+    }
+
+    /**
+     * @return integer|null
+     */
+    public function guessBitrate()
+    {
+        return $this->getTag('bitrate');
+    }
 }
