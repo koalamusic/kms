@@ -148,6 +148,7 @@ export default {
           self.recentSongs = datas.recentSongs
           self.top = datas.top
           self.recentlyAdded = datas.recentlyAdded
+          self.refreshDashboard()
       }).catch(function() {
           console.log("Home loading error")
       })
@@ -156,6 +157,7 @@ export default {
 
   created () {
     this.init()
+
     event.on({
       //'song:played': () => this.refreshDashboard()
     })
