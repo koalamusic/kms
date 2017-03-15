@@ -2,6 +2,7 @@
 
 namespace App\Libraries\MediaFileParser\Adapters;
 
+use App\Libraries\MediaFileParser\MediaFile;
 use Illuminate\Support\Arr;
 
 /**
@@ -11,17 +12,23 @@ use Illuminate\Support\Arr;
 abstract class BaseAdapter
 {
     /**
+     * @var MediaFile
+     */
+    protected $mediaFile;
+
+    /**
      * @var array
      */
     protected $tags = [];
 
     /**
      * BaseAdapter constructor.
-     * @param array $tags
+     * @param MediaFile $mediaFile
      */
-    public function __construct(array $tags)
+    public function __construct(MediaFile $mediaFile)
     {
-        $this->tags = $tags;
+        $this->mediaFile = $mediaFile;
+        $this->tags = $mediaFile->getTags();
     }
 
     /**

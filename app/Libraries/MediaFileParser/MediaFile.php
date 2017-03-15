@@ -63,7 +63,7 @@ class MediaFile extends File
     {
         switch ($this->guessTagsType()) {
             case 'ID3V2':
-                return new ID3V2Adapter($this->tags);
+                return new ID3V2Adapter($this);
                 break;
         }
     }
