@@ -11,6 +11,8 @@
       <artist-item v-for="item in displayedItems" :artist="item"/>
       <span class="item filler" v-for="n in 6"/>
       <to-top-button/>
+
+      <img v-if="!loaded" src="/img/bars.gif" alt="Sound bars" class="internal-loader" height="13" width="auto" />
     </div>
   </section>
 </template>
@@ -39,7 +41,8 @@ export default {
         key: null,
         reverse: false
       },
-      datas: []
+      datas: [],
+      loaded: false
     }
   },
 
@@ -69,6 +72,7 @@ export default {
       artistStore.init().then(function(artists) {
         self.datas = artists
         self.sortItems()
+        self.loaded = true
       }).catch(function() {
         console.log("Artists loading error")
       })

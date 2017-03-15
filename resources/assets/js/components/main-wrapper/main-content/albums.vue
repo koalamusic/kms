@@ -9,14 +9,16 @@
 
     <div ref="scroller" class="albums main-scroll-wrap" :class="'as-'+viewMode" @scroll="scrolling">
       <album-item v-for="item in displayedItems" :album="item"/>
-      <span class="item filler" v-for="n in 6"/>
+      <span class="item filler" v-for="n in 7"/>
       <to-top-button/>
+
+      <img v-if="!loaded" src="/img/bars.gif" alt="Sound bars" class="internal-loader" height="13" width="auto" />
     </div>
   </section>
 </template>
 
 <script>
-import { filterBy, limitBy, orderBy, event } from '../../../utils'
+import { filterBy, limitBy, showOverlay, hideOverlay, orderBy, event } from '../../../utils'
 import { albumStore } from '../../../stores'
 import albumItem from '../../shared/album-item.vue'
 import viewModeSwitch from '../../shared/view-mode-switch.vue'
@@ -30,15 +32,16 @@ export default {
 
   data () {
     return {
-      perPage: 21,
-      numOfItems: 21,
+      perPage: 100,
+      numOfItems: 100,
       q: '',
       viewMode: 'thumbnails',
       sorting: {
         key: 'name',
         reverse: false
       },
-      datas: []
+      datas: [],
+      loaded: false
     }
   },
 
@@ -68,6 +71,7 @@ export default {
       albumStore.init().then(function(albums) {
         self.datas = albums
         self.sortItems()
+        self.loaded = true
       }).catch(function() {
         console.log("Albums loading error")
       })
