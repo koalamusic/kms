@@ -45,7 +45,7 @@ export default {
 
   data () {
     return {
-      view: 'home', // The default view
+      view: 'login', // The default view
       albumCover: null,
       sharedState: sharedStore.state
     }
