@@ -3,13 +3,19 @@
 namespace App\Console\Commands\Medias;
 
 use App\Jobs\SynchronizeMedia;
+use App\Libraries\MediaFileParser\MediaFile;
 use App\Models\Setting;
 use App\Models\Song;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Support\Collection;
+use Symfony\Component\Finder\SplFileInfo;
 
+/**
+ * Class Synchronize
+ * @package App\Console\Commands\Medias
+ */
 class Synchronize extends Command
 {
     use DispatchesJobs;
@@ -47,8 +53,6 @@ class Synchronize extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return mixed
      */
     public function handle()
     {
@@ -93,7 +97,9 @@ class Synchronize extends Command
         $medias = $this->filesystem->allFiles($mediaPath);
 
         return Collection::make($medias)
-            ->keyBy(function ($file) {
+            ->transform(function (SplFileInfo $file) {
+                return new MediaFile($file);
+            })->keyBy(function (MediaFile $file) {
                 return sha1_file($file);
             });
     }
