@@ -57,6 +57,11 @@ export default {
         this.view = view
       },
 
+      'koel:ready': data => {
+        if(this.view == 'login')
+            this.view = 'home'
+      },
+
       /**
        * When a new song is played, find its cover for the translucent effect.
        *
