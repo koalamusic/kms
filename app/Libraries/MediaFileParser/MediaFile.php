@@ -2,8 +2,11 @@
 
 namespace App\Libraries\MediaFileParser;
 
-use getID3;
 use App\Libraries\MediaFileParser\Adapters\BaseAdapter as Adapter;
+use App\Libraries\MediaFileParser\Adapters\ID3V2Adapter;
+use getID3;
+use getid3_lib;
+use Illuminate\Support\Arr;
 use Symfony\Component\HttpFoundation\File\File;
 
 /**
@@ -29,6 +32,7 @@ class MediaFile extends File
 
     /**
      * MediaFile constructor.
+     *
      * @param string $path
      * @param getID3 $getID3
      */
@@ -37,64 +41,19 @@ class MediaFile extends File
         parent::__construct($path, true);
 
         $this->getID3 = (!is_null($getID3)) ? $getID3 : new getID3();
-        $this->tags = $this->getID3->analyze($this->getPathname(), $this->getSize());
+        $this->tags = $this->getTagsFromFile();
         $this->adapter = $this->guessAdapterFromTagsType();
     }
 
     /**
-     * @return int
+     * @return array
      */
-    public function getTrackNumber()
+    private function getTagsFromFile()
     {
-        return $this->getAdapter()->guessTrackNumber();
-    }
+        $tags = $this->getID3->analyze($this->getPathname(), $this->getSize());
+        getid3_lib::CopyTagsToComments($tags);
 
-    /**
-     * @return string
-     */
-    public function getTitle()
-    {
-        return $this->getAdapter()->guessTitle();
-    }
-
-    /**
-     * @return string
-     */
-    public function getArtistName()
-    {
-        return $this->getAdapter()->guessArtistName();
-    }
-
-    /**
-     * @return string
-     */
-    public function getGroupName()
-    {
-        return $this->getAdapter()->guessGroupName();
-    }
-
-    /**
-     * @return string
-     */
-    public function getGenreName()
-    {
-        return $this->getAdapter()->guessGenreName();
-    }
-
-    /**
-     * @return int
-     */
-    public function getYear()
-    {
-        return $this->getAdapter()->guessYear();
-    }
-
-    /**
-     * @return string
-     */
-    public function guessTagsType()
-    {
-
+        return $tags;
     }
 
     /**
@@ -102,7 +61,23 @@ class MediaFile extends File
      */
     protected function guessAdapterFromTagsType()
     {
+        switch ($this->guessTagsType()) {
+            case 'ID3V2':
+                return new ID3V2Adapter($this->tags);
+                break;
+        }
+    }
 
+    /**
+     * @return string|null
+     */
+    public function guessTagsType()
+    {
+        if (Arr::exists($this->tags, 'id3v2')) {
+            return 'ID3V2';
+        }
+
+        return null;
     }
 
     /**
@@ -119,6 +94,17 @@ class MediaFile extends File
     public function getTags()
     {
         return $this->tags;
+    }
+
+    /**
+     * @param $name
+     * @param $arguments
+     *
+     * @return mixed
+     */
+    public function __call($name, $arguments)
+    {
+        return $this->getAdapter()->{'guess' . ucfirst($name)}($arguments);
     }
 
     /**
