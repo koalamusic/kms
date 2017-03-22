@@ -69,22 +69,14 @@ export default {
      * or queue them up if Ctrl/Cmd key is pressed.
      */
     play (e) {
-      albumStore.getSongs(this.album).then(function(songs) {
-        if (e.metaKey || e.ctrlKey) {
-          queueStore.queue(songs)
-        } else {
-          playback.queueAndPlay(songs, false)
-        }
-      }).catch(function() {
-        console.log('Songs loading error')
-      })
+      albumStore.addToQueue(this.album, !(e.metaKey || e.ctrlKey))
     },
 
     /**
      * Shuffle all songs in album.
      */
     shuffle () {
-      playback.playAllInAlbum(this.album, true)
+      albumStore.addToQueue(this.album, true, true)
     },
 
     /**

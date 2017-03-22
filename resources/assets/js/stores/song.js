@@ -42,7 +42,9 @@ export const songStore = {
   },
 
   loadSongs(songs) {
-    var datas = {
+    let self = this
+
+    let datas = {
       ids: []
     }
     _.each(songs, function(song) {
@@ -51,9 +53,23 @@ export const songStore = {
 
     return new Promise((resolve, reject) => {
       http.post('songs', datas, ({ data }) => {
-        resolve(data.songs)
+        resolve(self.setupSongs(data.songs))
       }, error => reject(error))
     })
+  },
+
+  setupSongs(songs) {
+    _.each(songs, function(song, key) {
+      Vue.set(song, 'liked', false)
+      Vue.set(song, 'lyrics', null)
+      Vue.set(song, 'playbackState', 'stopped')
+      Vue.set(song, 'playCount', 0)
+      song.fmtLength = secondsToHis(song.length)
+
+      songs[key] = song
+    })
+
+    return songs
   },
 
   setupSong (song, album) {

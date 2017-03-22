@@ -87,6 +87,7 @@ export const queueStore = {
    * @param {Object|Array.<Object>}   songs   The song, or an array of songs
    * @param {Boolean}         replace Whether to replace the current queue
    * @param {Boolean}         toTop   Whether to prepend or append to the queue
+   * @param {Boolean}         play    Start playing after loading
    */
   queue (songs, replace = false, toTop = false, play = false) {
     // Load from distant if not good datas
@@ -111,7 +112,7 @@ export const queueStore = {
       } else {
         this.all = toTop ? union(songs, this.all) : union(this.all, songs)
       }
-
+      
       if(play) {
         playback.playFirstInQueue()
       }

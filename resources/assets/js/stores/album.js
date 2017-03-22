@@ -2,10 +2,10 @@
 
 import Vue from 'vue'
 import { reduce, each, union, difference, take, filter, orderBy, assign } from 'lodash'
-import { http } from '../services'
+import { http, playback } from '../services'
 import { secondsToHis } from '../utils'
 import stub from '../stubs/album'
-import { songStore, artistStore } from '.'
+import { songStore, artistStore, queueStore } from '.'
 
 export const albumStore = {
   stub,
@@ -69,6 +69,26 @@ export const albumStore = {
       http.get('albums/' + album.id + '/songs', ({ data }) => {
         resolve(data.songs)
       }, error => reject(error))
+    })
+  },
+
+  /**
+   * Load, add to queue and if necessary shuffle or/and play one album.
+   *
+   * @param {Array.<Object>} album
+   * @param {Boolean} play  Start playing
+   * @param {Boolean} shuffle   Shuffle songs before adding to queue
+   */
+  addToQueue(album, play = false, shuffle = false) {
+    this.getSongs(album).then(function(songs) {
+      songs = songStore.setupSongs(songs)
+      if (play) {
+        playback.queueAndPlay(songs, shuffle)
+      } else {
+        queueStore.queue(songs)
+      }
+    }).catch(function() {
+        console.log('Songs loading error')
     })
   },
 
