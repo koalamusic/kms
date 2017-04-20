@@ -5,7 +5,7 @@
     <queue v-show="view === 'queue'"/>
     <songs v-if="view === 'songs'"/>
     <albums v-if="view === 'albums'"/>
-    <album v-show="view === 'album'"/>
+    <album v-if="view === 'album'"/>
     <artists v-if="view === 'artists'"/>
     <artist v-show="view === 'artist'"/>
     <genres v-if="view === 'genres'"/>

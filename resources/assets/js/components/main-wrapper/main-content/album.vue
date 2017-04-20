@@ -118,7 +118,7 @@ export default {
   methods: {
     init(id) {
       if(id != 0) {
-        var self = this
+        let self = this
         albumStore.byId(id).then(function(album) {
           self.album = album
 

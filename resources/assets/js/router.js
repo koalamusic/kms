@@ -2,7 +2,7 @@ import isMobile from 'ismobilejs'
 import { each } from 'lodash'
 
 import { loadMainView } from './utils'
-import { artistStore, albumStore, songStore, queueStore, playlistStore, userStore, genreStore } from './stores'
+import { artistStore, songStore, queueStore, playlistStore, userStore, genreStore } from './stores'
 import { playback } from './services'
 
 export default {

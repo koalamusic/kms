@@ -25,6 +25,7 @@ import viewModeSwitch from '../../shared/view-mode-switch.vue'
 import sortModeSwitch from '../../shared/sort-mode-switch.vue'
 import infiniteScroll from '../../../mixins/infinite-scroll'
 import { http } from '../../../services'
+import { mapActions } from 'vuex'
 
 export default {
   mixins: [infiniteScroll],
@@ -40,7 +41,6 @@ export default {
         key: 'name',
         reverse: false
       },
-      datas: [],
       loaded: false
     }
   },
@@ -48,7 +48,7 @@ export default {
   computed: {
     displayedItems () {
       return limitBy(
-        filterBy(this.datas, this.q, 'name', 'artist.name'),
+        filterBy(albumStore.state.albums, this.q, 'name', 'artist.name'),
         this.numOfItems
       )
     }
@@ -64,8 +64,8 @@ export default {
       this.sortItems()
     },
     sortItems() {
-      this.datas = orderBy(this.datas, this.sorting.key, this.sorting.reverse)
-    },
+        albumStore.state.albums = orderBy(albumStore.state.albums, this.sorting.key, this.sorting.reverse)
+    }/*,
     init() {
       var self = this
       albumStore.init().then(function(albums) {
@@ -75,11 +75,12 @@ export default {
       }).catch(function() {
         console.log("Albums loading error")
       })
-    }
+    }*/
   },
 
   created () {
-    this.init()
+    //this.init()
+    //albumStore.init()
 
     event.on({
       'filter:changed': q => {
