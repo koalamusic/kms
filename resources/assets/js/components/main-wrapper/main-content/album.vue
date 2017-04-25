@@ -52,6 +52,7 @@
 </template>
 
 <script>
+  import { mapState } from 'vuex'
 import { pluralize, event } from '../../../utils'
 import { albumStore, artistStore, sharedStore } from '../../../stores'
 import { playback, download, albumInfo as albumInfoService } from '../../../services'
@@ -69,12 +70,10 @@ export default {
   data () {
     return {
       sharedState: sharedStore.state,
-      album: albumStore.stub,
       info: {
         showing: false,
         loading: true
-      },
-      songs: []
+      }
     }
   },
 
@@ -82,6 +81,12 @@ export default {
     isNormalArtist () {
       return !artistStore.isVariousArtists(this.album.artist) &&
         !artistStore.isUnknownArtist(this.album.artist)
+    },
+    album () {
+        return albumStore.state.album
+    },
+    songs () {
+        return albumStore.state.songs
     }
   },
 
@@ -110,36 +115,13 @@ export default {
     event.on('main-content-view:load', (view, id) => {
       if (view === 'album') {
         this.info.showing = false
-        this.init(id)
+        albumStore.dispatch('LOAD_ALBUM', id)
+        albumStore.dispatch('LOAD_ALBUM_SONGS', id)
       }
     })
   },
 
   methods: {
-    init(id) {
-      if(id != 0) {
-        let self = this
-        albumStore.byId(id).then(function(album) {
-          self.album = album
-
-          self.loadSongs()
-        }).catch(function() {
-          console.log("Album loading error")
-        })
-      }
-    },
-    loadSongs() {
-      var self = this
-      albumStore.getSongs(self.album).then(function(songs) {
-        self.songs = songs
-
-        self.$nextTick(() => {
-          // self.$refs.songList.sort()
-        })
-      }).catch(function() {
-        console.log('Songs loading error')
-      })
-    },
     /**
      * Shuffle the songs in the current album.
      * Overriding the mixin.

@@ -8,7 +8,7 @@
     </h1>
 
     <div ref="scroller" class="albums main-scroll-wrap" :class="'as-'+viewMode" @scroll="scrolling">
-      <album-item v-for="item in displayedItems" :album="item"/>
+      <album-item v-for="item in albums" :album="item"/>
       <span class="item filler" v-for="n in 7"/>
       <to-top-button/>
 
@@ -25,7 +25,7 @@ import viewModeSwitch from '../../shared/view-mode-switch.vue'
 import sortModeSwitch from '../../shared/sort-mode-switch.vue'
 import infiniteScroll from '../../../mixins/infinite-scroll'
 import { http } from '../../../services'
-import { mapActions } from 'vuex'
+import { mapState } from 'vuex'
 
 export default {
   mixins: [infiniteScroll],
@@ -46,13 +46,32 @@ export default {
   },
 
   computed: {
+      albums () {
+          return albumStore.state.albums
+      }
+  },
+
+  /*computed: mapState ([
+      'albums'
+  ]),*/
+  created: function () {
+      albumStore.dispatch('LOAD_ALBUMS')
+
+      event.on({
+          'filter:changed': q => {
+              this.q = q
+          }
+      })
+  },
+
+     /* {
     displayedItems () {
       return limitBy(
         filterBy(albumStore.state.albums, this.q, 'name', 'artist.name'),
         this.numOfItems
       )
     }
-  },
+  },*/
 
   methods: {
     changeViewMode (mode) {
@@ -76,17 +95,6 @@ export default {
         console.log("Albums loading error")
       })
     }*/
-  },
-
-  created () {
-    //this.init()
-    //albumStore.init()
-
-    event.on({
-      'filter:changed': q => {
-        this.q = q
-      }
-    })
   }
 }
 </script>

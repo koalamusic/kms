@@ -6,76 +6,63 @@ import { reduce, each, union, difference, take, filter, orderBy, assign } from '
 import { http, playback } from '../services'
 import { secondsToHis } from '../utils'
 import stub from '../stubs/album'
+import axios from 'axios'
 import { songStore, artistStore, queueStore } from '.'
 
 Vue.use(Vuex)
 
 export const albumStore = new Vuex.Store({
-    stub: stub,
     state: {
-      albums: []
+        albums: [],
+        album: stub,
+        songs: [],
+        stub: stub
     },
-    /**
-     * Init the store.
-     */
-    init () {
-        let self = this
-        this.loadDatas().then(function(albums) {
-            self.state.albums = albums
-        }).catch(function() {
-            console.log("Albums loading error")
-        })
+    actions: {
+        LOAD_ALBUMS ({ commit }) {
+            axios.get('albums').then(({ data }) => {
+                commit('SET_ALBUMS', { albums: data.albums })
+            }, error => {
+                console.log("Albums loading error")
+            })
+        },
+        LOAD_ALBUM ({ commit }, id) {
+            axios.get('albums/' + id).then(({ data }) => {
+                commit('SET_ALBUM', { album: data.album })
+            }, error => {
+                console.log("Album " + id + " loading error")
+            })
+        },
+        LOAD_ALBUM_SONGS ({ commit }, id) {
+            axios.get('albums/' + id + '/songs').then(({ data }) => {
+                commit('SET_ALBUM_SONGS', { songs: data.songs })
+            }, error => {
+                console.log("Loading songs for album " + id + " error")
+            })
+        }
     },
-    loadDatas () {
-        return new Promise((resolve, reject) => {
-            http.get('albums', ({ data }) => {
-                resolve(data.albums)
-            }, error => reject(error))
-        })
+    mutations: {
+        SET_ALBUMS: (state, { albums }) => {
+            state.albums = albums
+        },
+        SET_ALBUM: (state, { album }) => {
+            state.album = album
+        },
+        SET_ALBUM_SONGS: (state, { songs }) => {
+            state.songs = songs
+        }
+    },
+    getters: {
+    },
+    modules: {
+
     },
 
     setupAlbum (album, artist) {
-        Vue.set(album, 'playCount', 0)
-        Vue.set(album, 'artist', artist)
         Vue.set(album, 'info', null)
         this.getLength(album)
-        this.cache[album.id] = album
 
         return album
-    },
-
-    /**
-     * Get all albums in the store.
-     *
-     * @return {Array.<Object>}
-     */
-    get all () {
-        return this.state.albums
-    },
-
-    /**
-     * Set all albums.
-     *
-     * @param  {Array.<Object>} value
-     */
-    set all (value) {
-        this.state.albums = value
-    },
-
-    byId (id) {
-        return new Promise((resolve, reject) => {
-            http.get('albums/' + id, ({ data }) => {
-                resolve(data.album)
-            }, error => reject(error))
-        })
-    },
-
-    getSongs(album) {
-        return new Promise((resolve, reject) => {
-            http.get('albums/' + album.id + '/songs', ({ data }) => {
-                resolve(data.songs)
-            }, error => reject(error))
-        })
     },
 
     /**
