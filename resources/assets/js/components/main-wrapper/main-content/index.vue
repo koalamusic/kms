@@ -70,7 +70,7 @@ export default {
        * @return {Boolean}
        */
       'song:played': song => {
-        this.albumCover = song.album.cover === albumStore.stub.cover ? null : song.album.cover
+        this.albumCover = song.album.cover === albumStore.state.stub.cover ? null : song.album.cover
       }
     })
   }

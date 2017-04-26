@@ -69,7 +69,7 @@ export default {
      * or queue them up if Ctrl/Cmd key is pressed.
      */
     play (e) {
-      albumStore.addToQueue(this.album, !(e.metaKey || e.ctrlKey))
+        albumStore.dispatch('ADD_TO_QUEUE', [this.album.id, !(e.metaKey || e.ctrlKey)])
     },
 
     /**

@@ -19,13 +19,12 @@
 
 <script>
 import { filterBy, limitBy, showOverlay, hideOverlay, orderBy, event } from '../../../utils'
-import { albumStore } from '../../../stores'
+import { albumStore, searchStore } from '../../../stores'
 import albumItem from '../../shared/album-item.vue'
 import viewModeSwitch from '../../shared/view-mode-switch.vue'
 import sortModeSwitch from '../../shared/sort-mode-switch.vue'
 import infiniteScroll from '../../../mixins/infinite-scroll'
 import { http } from '../../../services'
-import { mapState } from 'vuex'
 
 export default {
   mixins: [infiniteScroll],
@@ -35,43 +34,29 @@ export default {
     return {
       perPage: 100,
       numOfItems: 100,
-      q: '',
       viewMode: 'thumbnails',
       sorting: {
         key: 'name',
         reverse: false
-      },
-      loaded: false
+      }
     }
   },
 
   computed: {
       albums () {
-          return albumStore.state.albums
+          return limitBy(
+              filterBy(albumStore.state.albums, searchStore.state.query, 'name', 'artist.name'),
+              this.numOfItems
+          )
+      },
+      loaded() {
+          return albumStore.state.albums.length > 0
       }
   },
 
-  /*computed: mapState ([
-      'albums'
-  ]),*/
   created: function () {
       albumStore.dispatch('LOAD_ALBUMS')
-
-      event.on({
-          'filter:changed': q => {
-              this.q = q
-          }
-      })
   },
-
-     /* {
-    displayedItems () {
-      return limitBy(
-        filterBy(albumStore.state.albums, this.q, 'name', 'artist.name'),
-        this.numOfItems
-      )
-    }
-  },*/
 
   methods: {
     changeViewMode (mode) {
@@ -84,17 +69,7 @@ export default {
     },
     sortItems() {
         albumStore.state.albums = orderBy(albumStore.state.albums, this.sorting.key, this.sorting.reverse)
-    }/*,
-    init() {
-      var self = this
-      albumStore.init().then(function(albums) {
-        self.datas = albums
-        self.sortItems()
-        self.loaded = true
-      }).catch(function() {
-        console.log("Albums loading error")
-      })
-    }*/
+    }
   }
 }
 </script>

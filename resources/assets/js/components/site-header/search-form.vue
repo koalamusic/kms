@@ -13,6 +13,7 @@
 <script>
 import isMobile from 'ismobilejs'
 import { debounce } from 'lodash'
+import { searchStore } from '../../stores'
 
 import { event } from '../../utils'
 
@@ -30,8 +31,8 @@ export default {
     /**
      * Limit the filter's execution rate using lodash's debounce.
      */
-    filter: debounce(function () {
-      event.emit('filter:changed', this.q)
+    filter: debounce(function(e) {
+        searchStore.dispatch('CHANGE_QUERY', this.q)
     }, 200)
   },
 

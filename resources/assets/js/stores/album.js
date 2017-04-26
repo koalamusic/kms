@@ -39,6 +39,18 @@ export const albumStore = new Vuex.Store({
             }, error => {
                 console.log("Loading songs for album " + id + " error")
             })
+        },
+        ADD_TO_QUEUE ({ commit }, [id, play, shuffle]) {
+            axios.get('albums/' + id + '/songs').then(({ data }) => {
+                let songs = songStore.setupSongs(data.songs)
+                if (play) {
+                    playback.queueAndPlay(songs, shuffle)
+                } else {
+                    queueStore.queue(songs)
+                }
+            }, error => {
+                console.log("Loading songs for album " + id + " error")
+            })
         }
     },
     mutations: {
@@ -63,26 +75,6 @@ export const albumStore = new Vuex.Store({
         this.getLength(album)
 
         return album
-    },
-
-    /**
-     * Load, add to queue and if necessary shuffle or/and play one album.
-     *
-     * @param {Array.<Object>} album
-     * @param {Boolean} play  Start playing
-     * @param {Boolean} shuffle   Shuffle songs before adding to queue
-     */
-    addToQueue(album, play = false, shuffle = false) {
-        this.getSongs(album).then(function(songs) {
-            songs = songStore.setupSongs(songs)
-            if (play) {
-                playback.queueAndPlay(songs, shuffle)
-            } else {
-                queueStore.queue(songs)
-            }
-        }).catch(function() {
-            console.log('Songs loading error')
-        })
     },
 
     /**
