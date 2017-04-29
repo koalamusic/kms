@@ -53,5 +53,4 @@ interface Adapter
      * @return integer|null
      */
     public function guessBitrate();
-
 }

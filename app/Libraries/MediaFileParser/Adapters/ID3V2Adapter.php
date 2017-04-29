@@ -4,6 +4,7 @@ namespace App\Libraries\MediaFileParser\Adapters;
 
 /**
  * Class ID3V1Adapter
+ *
  * @package App\Libraries\MediaFileParser\Adapters
  */
 class ID3V2Adapter extends ID3V1Adapter

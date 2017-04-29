@@ -2,8 +2,8 @@
 
 namespace App\Libraries\MediaFileParser;
 
-use App\Libraries\MediaFileParser\Contracts\Adapter;
 use App\Libraries\MediaFileParser\Adapters\ID3V2Adapter;
+use App\Libraries\MediaFileParser\Contracts\Adapter;
 use getID3;
 use getid3_lib;
 use Illuminate\Support\Arr;
@@ -11,6 +11,10 @@ use Symfony\Component\HttpFoundation\File\File;
 
 /**
  * Class MediaFile
+ *
+ * @property string genreName
+ * @property string title
+ * @property float duration
  * @package App\Libraries\MediaFileParser
  */
 class MediaFile extends File
@@ -40,7 +44,7 @@ class MediaFile extends File
     {
         parent::__construct($path, true);
 
-        $this->getID3 = (!is_null($getID3)) ? $getID3 : new getID3();
+        $this->getID3 = (! is_null($getID3)) ? $getID3 : new getID3();
         $this->tags = $this->getTagsFromFile();
         $this->adapter = $this->guessAdapterFromTagsType();
     }
@@ -104,16 +108,7 @@ class MediaFile extends File
      */
     public function __call($name, $arguments)
     {
-        return $this->getAdapter()->{'guess' . ucfirst($name)}($arguments);
-    }
-
-    /**
-     * @param $name
-     * @return mixed
-     */
-    public function __get($name)
-    {
-        return $this->getAdapter()->{'guess' . ucfirst($name)}();
+        return $this->getAdapter()->{'guess'.ucfirst($name)}($arguments);
     }
 
     /**
@@ -122,5 +117,14 @@ class MediaFile extends File
     public function getAdapter()
     {
         return $this->adapter;
+    }
+
+    /**
+     * @param $name
+     * @return mixed
+     */
+    public function __get($name)
+    {
+        return $this->getAdapter()->{'guess'.ucfirst($name)}();
     }
 }

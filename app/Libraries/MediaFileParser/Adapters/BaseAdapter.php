@@ -8,6 +8,7 @@ use Illuminate\Support\Arr;
 
 /**
  * Class BaseAdapter
+ *
  * @package App\Libraries\MediaFileParser\Adapters
  */
 abstract class BaseAdapter implements Adapter
@@ -24,6 +25,7 @@ abstract class BaseAdapter implements Adapter
 
     /**
      * BaseAdapter constructor.
+     *
      * @param MediaFile $mediaFile
      */
     public function __construct(MediaFile $mediaFile)
