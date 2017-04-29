@@ -2,6 +2,7 @@
 
 namespace App\Libraries\MediaFileParser\Adapters;
 
+use App\Libraries\MediaFileParser\Contracts\Adapter;
 use App\Libraries\MediaFileParser\MediaFile;
 use Illuminate\Support\Arr;
 
@@ -9,7 +10,7 @@ use Illuminate\Support\Arr;
  * Class BaseAdapter
  * @package App\Libraries\MediaFileParser\Adapters
  */
-abstract class BaseAdapter
+abstract class BaseAdapter implements Adapter
 {
     /**
      * @var MediaFile

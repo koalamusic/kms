@@ -2,7 +2,7 @@
 
 namespace App\Libraries\MediaFileParser;
 
-use App\Libraries\MediaFileParser\Adapters\BaseAdapter as Adapter;
+use App\Libraries\MediaFileParser\Contracts\Adapter;
 use App\Libraries\MediaFileParser\Adapters\ID3V2Adapter;
 use getID3;
 use getid3_lib;
@@ -48,7 +48,7 @@ class MediaFile extends File
     /**
      * @return array
      */
-    private function getTagsFromFile()
+    protected function getTagsFromFile()
     {
         $tags = $this->getID3->analyze($this->getPathname(), $this->getSize());
         getid3_lib::CopyTagsToComments($tags);
@@ -105,6 +105,15 @@ class MediaFile extends File
     public function __call($name, $arguments)
     {
         return $this->getAdapter()->{'guess' . ucfirst($name)}($arguments);
+    }
+
+    /**
+     * @param $name
+     * @return mixed
+     */
+    public function __get($name)
+    {
+        return $this->getAdapter()->{'guess' . ucfirst($name)}();
     }
 
     /**
