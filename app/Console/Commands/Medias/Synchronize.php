@@ -91,7 +91,9 @@ class Synchronize extends Command
 
         $medias = $this->filesystem->allFiles($mediaPath);
 
-        $this->info("Building collection ({count($medias)}) ...");
+        $count = count($medias);
+
+        $this->info("Building collection ({$count}) ...");
 
         $medias = Collection::make($medias)->keyBy(function (SplFileInfo $file) {
             return $this->getFileHash($file);
