@@ -94,7 +94,7 @@ class Synchronize extends Command
         $bar = $this->output->createProgressBar(count($medias));
 
         $medias = Collection::make($medias)->keyBy(function (SplFileInfo $file) {
-            return crc32($file);
+            return hash_file('crc32b', $file);
         })->each(function () use (&$bar) {
             $bar->advance();
         });
