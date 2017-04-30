@@ -106,28 +106,28 @@ class Synchronize extends Command
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Collection
-     */
-    protected function getAlreadySyncedMedias()
-    {
-        return Song::all()->keyBy('id');
-    }
-
-    /**
      * @param \SplFileInfo $file
      * @return string
      */
     protected function getFileHash(SplFileInfo $file)
     {
-        $process = new Process("sha1sum {$file->getRealPath()}");
+        $process = new Process("sha1sum {$file->getRealPath()}", '/');
         $process->run();
 
-        if (!$process->isSuccessful()) {
+        if (! $process->isSuccessful()) {
             throw new ProcessFailedException($process);
         }
 
         $output = Str::words($process->getOutput(), 1, '');
 
         return $output;
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    protected function getAlreadySyncedMedias()
+    {
+        return Song::all()->keyBy('id');
     }
 }
