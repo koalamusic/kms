@@ -95,7 +95,7 @@ class Synchronize extends Command
 
         $this->info("Building collection ({$count}) ...");
 
-        $medias = Collection::make($medias)->keyBy(function (SplFileInfo $file) {
+        $medias = Collection::make($medias)->transform(function (SplFileInfo $file) {
             return $this->getFileHash($file);
         });
 
