@@ -89,11 +89,13 @@ class Synchronize extends Command
 
         $medias = $this->filesystem->allFiles($mediaPath);
 
+        $this->info('Building collection ...');
+
         Collection::make($medias)->keyBy(function (SplFileInfo $file) {
             return crc32($file);
         });
-         
 
+        $this->info('End building collection ...');
     }
 
     /**
