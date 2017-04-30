@@ -10,7 +10,9 @@ use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use SplFileInfo;
+use Symfony\Component\Process\Process;
 
 /**
  * Class Synchronize
@@ -92,7 +94,7 @@ class Synchronize extends Command
         $this->info('Building collection ...');
 
         $medias = Collection::make($medias)->keyBy(function (SplFileInfo $file) {
-            return hash_file('sha1', $file);
+            return $this->getFileHash($file);
         });
 
         $this->info('End building collection ...');
@@ -106,5 +108,19 @@ class Synchronize extends Command
     protected function getAlreadySyncedMedias()
     {
         return Song::all()->keyBy('id');
+    }
+
+    /**
+     * @param \SplFileInfo $file
+     * @return string
+     */
+    protected function getFileHash(SplFileInfo $file)
+    {
+        $process = new Process("sha1sum {$file->getRealPath()}");
+        $process->run();
+        $output = Str::words($process->getOutput(), 1, '');
+        $process->clearOutput();
+
+        return $output;
     }
 }
