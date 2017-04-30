@@ -3,7 +3,6 @@
 namespace App\Console\Commands\Medias;
 
 use App\Jobs\SynchronizeMedia;
-use App\Libraries\MediaFileParser\MediaFile;
 use App\Models\Setting;
 use App\Models\Song;
 use Exception;
@@ -88,17 +87,13 @@ class Synchronize extends Command
             throw new Exception();
         }
 
-        $this->info('Reading media files from file system ...');
-
         $medias = $this->filesystem->allFiles($mediaPath);
 
-        $this->info('Building collection ...');
-
         Collection::make($medias)->keyBy(function (SplFileInfo $file) {
-            return spl_object_hash($file);
+            return crc32($file);
         });
+         
 
-        $this->info('End building collection ...');
     }
 
     /**
