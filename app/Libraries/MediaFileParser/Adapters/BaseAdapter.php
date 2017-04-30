@@ -3,7 +3,7 @@
 namespace App\Libraries\MediaFileParser\Adapters;
 
 use App\Libraries\MediaFileParser\Contracts\Adapter;
-use App\Libraries\MediaFileParser\MediaFile;
+use App\Libraries\MediaFileParser\MediaFileInfo;
 use Illuminate\Support\Arr;
 
 /**
@@ -14,9 +14,9 @@ use Illuminate\Support\Arr;
 abstract class BaseAdapter implements Adapter
 {
     /**
-     * @var MediaFile
+     * @var MediaFileInfo
      */
-    protected $mediaFile;
+    protected $mediaFileInfo;
 
     /**
      * @var array
@@ -26,12 +26,12 @@ abstract class BaseAdapter implements Adapter
     /**
      * BaseAdapter constructor.
      *
-     * @param MediaFile $mediaFile
+     * @param \App\Libraries\MediaFileParser\MediaFileInfo $mediaFileInfo
      */
-    public function __construct(MediaFile $mediaFile)
+    public function __construct(MediaFileInfo $mediaFileInfo)
     {
-        $this->mediaFile = $mediaFile;
-        $this->tags = $mediaFile->getTags();
+        $this->mediaFileInfo = $mediaFileInfo;
+        $this->tags = $mediaFileInfo->getTags();
     }
 
     /**

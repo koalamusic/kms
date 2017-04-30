@@ -6,14 +6,16 @@ use App\Jobs\SynchronizeMedia;
 use App\Libraries\MediaFileParser\MediaFile;
 use App\Models\Setting;
 use App\Models\Song;
+use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Support\Collection;
-use Symfony\Component\Finder\SplFileInfo;
+use SplFileInfo;
 
 /**
  * Class Synchronize
+ *
  * @package App\Console\Commands\Medias
  */
 class Synchronize extends Command
@@ -75,14 +77,6 @@ class Synchronize extends Command
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Collection
-     */
-    protected function getAlreadySyncedMedias()
-    {
-        return Song::all()->keyBy('id');
-    }
-
-    /**
      * @return Collection
      * @throws \Exception
      */
@@ -90,17 +84,28 @@ class Synchronize extends Command
     {
         $mediaPath = Setting::get('media_path');
 
-        if (!$this->filesystem->isDirectory($mediaPath)) {
-            throw new \Exception();
+        if (! $this->filesystem->isDirectory($mediaPath)) {
+            throw new Exception();
         }
+
+        $this->info('Reading media files from file system ...');
 
         $medias = $this->filesystem->allFiles($mediaPath);
 
-        return Collection::make($medias)
-            ->transform(function (SplFileInfo $file) {
-                return new MediaFile($file);
-            })->keyBy(function (MediaFile $file) {
-                return sha1_file($file);
-            });
+        $this->info('Building collection ...');
+
+        Collection::make($medias)->keyBy(function (SplFileInfo $file) {
+            return sha1($file->getFilename());
+        });
+
+        $this->info('End building collection ...');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    protected function getAlreadySyncedMedias()
+    {
+        return Song::all()->keyBy('id');
     }
 }

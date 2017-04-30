@@ -7,17 +7,14 @@ use App\Libraries\MediaFileParser\Contracts\Adapter;
 use getID3;
 use getid3_lib;
 use Illuminate\Support\Arr;
-use Symfony\Component\HttpFoundation\File\File;
+use SplFileInfo;
 
 /**
- * Class MediaFile
+ * Class MediaFileInfo
  *
- * @property string genreName
- * @property string title
- * @property float duration
  * @package App\Libraries\MediaFileParser
  */
-class MediaFile extends File
+class MediaFileInfo extends SplFileInfo
 {
     /**
      * @var getID3
@@ -42,7 +39,7 @@ class MediaFile extends File
      */
     public function __construct($path, getID3 $getID3 = null)
     {
-        parent::__construct($path, true);
+        parent::__construct($path);
 
         $this->getID3 = (! is_null($getID3)) ? $getID3 : new getID3();
         $this->tags = $this->getTagsFromFile();
