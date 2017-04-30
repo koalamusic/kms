@@ -92,7 +92,7 @@ class Synchronize extends Command
         $this->info('Building collection ...');
 
         $medias = Collection::make($medias)->keyBy(function (SplFileInfo $file) {
-            return crc32($file);
+            return hash_file('sha1', $file);
         });
 
         $this->info('End building collection ...');
