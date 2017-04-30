@@ -12,6 +12,7 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use SplFileInfo;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
 /**
@@ -120,8 +121,12 @@ class Synchronize extends Command
     {
         $process = new Process("sha1sum {$file->getRealPath()}");
         $process->run();
+
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+
         $output = Str::words($process->getOutput(), 1, '');
-        $process->clearOutput();
 
         return $output;
     }
