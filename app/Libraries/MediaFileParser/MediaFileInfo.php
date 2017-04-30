@@ -117,6 +117,14 @@ class MediaFileInfo extends SplFileInfo
     }
 
     /**
+     * @return bool
+     */
+    public function isMediaFile()
+    {
+        return $this->isFile() && ! is_null($this->guessTagsType());
+    }
+
+    /**
      * @param $name
      * @return mixed
      */
