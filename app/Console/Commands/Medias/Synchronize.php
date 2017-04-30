@@ -101,7 +101,7 @@ class Synchronize extends Command
 
         $this->info('End building collection ...');
 
-        dd(count($medias));
+        dd($medias);
     }
 
     /**
