@@ -91,9 +91,15 @@ class Synchronize extends Command
 
         $this->info('Building collection ...');
 
+        $bar = $this->output->createProgressBar(count($medias));
+
         Collection::make($medias)->keyBy(function (SplFileInfo $file) {
             return crc32($file);
+        })->each(function () use ($bar) {
+            $bar->advance();
         });
+
+        $bar->finish();
 
         $this->info('End building collection ...');
     }
