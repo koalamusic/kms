@@ -111,7 +111,7 @@ class Synchronize extends Command
      */
     protected function getFileHash(SplFileInfo $file)
     {
-        $process = new Process("sha1sum '{$file->getFilename()}'");
+        $process = new Process("sha1sum '{$file->getRealPath()}'");
         $process->run();
 
         if (! $process->isSuccessful()) {
