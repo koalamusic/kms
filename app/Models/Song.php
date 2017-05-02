@@ -58,7 +58,7 @@ class Song extends Model
      *
      * @var bool
      */
-    public $incrementing = false;
+    public $incrementing = true;
 
     public function contributingArtist()
     {
