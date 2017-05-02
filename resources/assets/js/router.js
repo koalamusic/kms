@@ -1,3 +1,6 @@
+import Vue from 'vue'
+import Router from 'vue-router'
+
 import isMobile from 'ismobilejs'
 import { each } from 'lodash'
 
@@ -5,7 +8,56 @@ import { loadMainView } from './utils'
 import { artistStore, songStore, queueStore, playlistStore, userStore, genreStore } from './stores'
 import { playback } from './services'
 
-export default {
+import MinimalLayout from './components/templates/minimal-layout'
+import MainLayout from './components/templates/main-layout'
+
+import Login from './components/contents/login'
+
+Vue.use(Router)
+
+export default new Router({
+    linkActiveClass: '',
+    routes: [
+        {
+            path: '/auth',
+            component: MinimalLayout,
+            children: [
+                {
+                    path: 'login',
+                    component: Login
+                }
+            ]
+        },
+        {
+            path: '/',
+            component: MainLayout,
+            beforeEnter: (to, from, next) => {
+                // Check here if user is authenticated
+                next('auth/login')
+            },
+            children: [
+                {
+                    path: '',
+                    component: Login
+                }/*,
+                {
+                    path: '/individual',
+                    component: Individual
+                },
+                {
+                    path: '/professional',
+                    component: Professional
+                },
+                {
+                    path: '/preferences',
+                    component: Preferences
+                }*/
+            ]
+        }
+    ]
+})
+
+/*export default {
   routes: {
     '/home' () {
       loadMainView('home')
@@ -108,11 +160,7 @@ export default {
     })
   },
 
-  /**
-   * Navigate to a (relative, hashed) path.
-   *
-   * @param  {String} path
-   */
+
   go (path) {
     if (path[0] !== '/') {
       path = `/${path}`
@@ -125,3 +173,4 @@ export default {
     document.location.href = `${document.location.origin}${path}`
   }
 }
+*/

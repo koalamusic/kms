@@ -1,19 +1,43 @@
 import { each, find, without } from 'lodash'
 import md5 from 'blueimp-md5'
 import Vue from 'vue'
+import Vuex from 'vuex'
 import NProgress from 'nprogress'
 
+import axios from 'axios'
 import { http } from '../services'
 import { alerts } from '../utils'
 import stub from '../stubs/user'
 
-export const userStore = {
-  stub,
+Vue.use(Vuex)
 
-  state: {
-    users: [],
-    current: stub
-  },
+export const userStore = new Vuex.Store({
+    state: {
+        users: [],
+        user: stub,
+        stub: stub,
+        token: null
+    },
+    actions: {
+        AUTHENTICATE ({ commit }, [email, password]) {
+            NProgress.start()
+
+            axios.post('api/me', { email, password }, ({ data }) => {
+                //commit('SET_TOKEN', { token: data.token })
+                resolve(data)
+            }, error => reject(error))
+        }
+    },
+    mutations: {
+        SET_TOKEN: (state, { token }) => {
+            state.token = token
+        }
+    },
+    getters: {
+    },
+    modules: {
+
+    },
 
   /**
    * Init the store.
@@ -224,4 +248,4 @@ export const userStore = {
       }, error => reject(error))
     })
   }
-}
+})

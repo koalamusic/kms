@@ -1,8 +1,10 @@
 import './static-loader'
 import Vue from 'vue'
+import App from './App'
 import { event } from './utils'
 import { http } from './services'
 import { VirtualScroller } from 'vue-virtual-scroller/dist/vue-virtual-scroller'
+import router from './router'
 Vue.component('virtual-scroller', VirtualScroller)
 
 /**
@@ -13,9 +15,11 @@ Vue.component('virtual-scroller', VirtualScroller)
  */
 new Vue({
   el: '#app',
-  render: h => h(require('./app.vue')),
+  router,
+  template: '<App/>',
+  components: {App},
   created () {
-    event.init()
-    http.init()
+    //event.init()
+    //http.init()
   }
 })
