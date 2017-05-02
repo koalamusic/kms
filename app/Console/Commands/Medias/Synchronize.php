@@ -10,10 +10,7 @@ use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 use SplFileInfo;
-use Symfony\Component\Process\Exception\ProcessFailedException;
-use Symfony\Component\Process\Process;
 
 /**
  * Class Synchronize
@@ -62,6 +59,8 @@ class Synchronize extends Command
     {
         $mediasToSync = $this->getMediasToSync();
 
+        dd($mediasToSync);
+
         foreach ($mediasToSync as $mediaToSync) {
             $this->dispatchNow(new SynchronizeMedia($mediaToSync));
         }
@@ -72,10 +71,17 @@ class Synchronize extends Command
      */
     protected function getMediasToSync()
     {
-        $mediasFromFileSystem = $this->getMediasFromFilesystem();
-        $alreadySyncedMedias = $this->getAlreadySyncedMedias();
+        $mediasFromFileSystem = $this->getMediasFromFilesystem()->keyBy(function (SplFileInfo $media) {
+            return hash('sha1', $media->getRealPath());
+        });
 
-        return $mediasFromFileSystem->diffKeys($alreadySyncedMedias);
+        $alreadySyncedMedias = $this->getAlreadySyncedMedias()->keyBy(function (Song $media) {
+            return hash('sha1', $media->path);
+        });
+
+        $mediasToSync = $mediasFromFileSystem->diffKeys($alreadySyncedMedias);
+
+        return $mediasToSync;
     }
 
     /**
@@ -90,37 +96,7 @@ class Synchronize extends Command
             throw new Exception();
         }
 
-        $medias = $this->filesystem->allFiles($mediaPath);
-
-        $count = count($medias);
-
-        $this->info("Building collection ({$count}) ...");
-
-        $medias = Collection::make($medias)->transform(function (SplFileInfo $file) {
-            return $this->getFileHash($file);
-        });
-
-        $this->info('End building collection ...');
-
-        dd($medias);
-    }
-
-    /**
-     * @param \SplFileInfo $file
-     * @return string
-     */
-    protected function getFileHash(SplFileInfo $file)
-    {
-        $process = new Process('sha1sum "'.$file->getRealPath().'"');
-        $process->run();
-
-        if (! $process->isSuccessful()) {
-            throw new ProcessFailedException($process);
-        }
-
-        $output = Str::words($process->getOutput(), 1, '');
-
-        return $output;
+        return Collection::make($this->filesystem->allFiles($mediaPath));
     }
 
     /**
@@ -128,6 +104,6 @@ class Synchronize extends Command
      */
     protected function getAlreadySyncedMedias()
     {
-        return Song::all()->keyBy('id');
+        return Song::all();
     }
 }
