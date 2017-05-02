@@ -2,24 +2,32 @@
 
 namespace App\Jobs;
 
+use App\Libraries\MediaFileParser\MediaFileInfo;
+use App\Models\Song;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use SplFileInfo;
 
 class SynchronizeMedia implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
+     * @var MediaFileInfo
+     */
+    public $media;
+
+    /**
      * Create a new job instance.
      *
-     * @return void
+     * @param \SplFileInfo $media
      */
-    public function __construct()
+    public function __construct(SplFileInfo $media)
     {
-        //
+        $this->media = new MediaFileInfo($media);
     }
 
     /**
@@ -29,6 +37,11 @@ class SynchronizeMedia implements ShouldQueue
      */
     public function handle()
     {
-        //
+        Song::create([
+            'genre_id' => 0,
+            'title' => $this->media->title,
+            'path' => $this->media->getRealPath(),
+            'mtime' => $this->media->getMTime()
+        ]);
     }
 }
