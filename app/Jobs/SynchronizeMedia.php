@@ -38,7 +38,6 @@ class SynchronizeMedia implements ShouldQueue
     public function handle()
     {
         Song::create([
-            'genre_id' => 0,
             'album_id' => 1,
             'title' => $this->media->title,
             'path' => $this->media->getRealPath(),
