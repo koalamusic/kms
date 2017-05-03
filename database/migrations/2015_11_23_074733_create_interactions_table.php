@@ -15,7 +15,7 @@ class CreateInteractionsTable extends Migration
         Schema::create('interactions', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('user_id')->unsigned();
-            $table->string('song_id', 32);
+            $table->integer('song_id');
             $table->boolean('liked')->default(false);
             $table->integer('play_count')->default(0);
             $table->timestamps();
