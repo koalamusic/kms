@@ -53,13 +53,6 @@ class Song extends Model
         'genre_id' => 'int',
     ];
 
-    /**
-     * Indicates if the IDs are auto-incrementing.
-     *
-     * @var bool
-     */
-    public $incrementing = true;
-
     public function contributingArtist()
     {
         return $this->belongsTo(ContributingArtist::class);

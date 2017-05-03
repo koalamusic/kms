@@ -36,11 +36,6 @@ class EventServiceProvider extends ServiceProvider
     {
         parent::boot();
 
-        // Generate a unique hash for a song from its path to be the ID
-        Song::creating(function ($song) {
-            $song->id = File::getHash($song->path);
-        });
-
         // Remove the cover file if the album is deleted
         Album::deleted(function ($album) {
             if ($album->hasCover) {
