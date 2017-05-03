@@ -33,11 +33,12 @@ export default new Router({
             component: MainLayout,
             beforeEnter: (to, from, next) => {
                 // Check here if user is authenticated
-                next('auth/login')
+                if(!userStore.getters.isAuthenticated())
+                    next('auth/login')
             },
             children: [
                 {
-                    path: '',
+                    path: '/',
                     component: Login
                 }/*,
                 {

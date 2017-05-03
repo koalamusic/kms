@@ -8,6 +8,8 @@ import axios from 'axios'
 import { http } from '../services'
 import { alerts } from '../utils'
 import stub from '../stubs/user'
+import { ls } from '../services'
+import Router from 'vue-router'
 
 Vue.use(Vuex)
 
@@ -16,24 +18,31 @@ export const userStore = new Vuex.Store({
         users: [],
         user: stub,
         stub: stub,
-        token: null
+        authenticated: false
     },
     actions: {
         AUTHENTICATE ({ commit }, [email, password]) {
             NProgress.start()
+            console.log(this)
 
-            axios.post('api/me', { email, password }, ({ data }) => {
-                //commit('SET_TOKEN', { token: data.token })
-                resolve(data)
-            }, error => reject(error))
+            axios.post('api/me', { email, password }).then(({ data }) => {
+                ls.set('jwt-token', data.token)
+                commit('SET_AUTHENTICATED', { value: true })
+                NProgress.done()
+            }, error => {
+                console.log("Auth error")
+            })
         }
     },
     mutations: {
-        SET_TOKEN: (state, { token }) => {
-            state.token = token
+        SET_AUTHENTICATED: (state, { value }) => {
+            state.authenticated = value
         }
     },
     getters: {
+        isAuthenticated: state => {
+            return state.authenticated
+        }
     },
     modules: {
 
@@ -126,13 +135,13 @@ export const userStore = new Vuex.Store({
    * @param  {String}   password
    */
   login (email, password) {
-    NProgress.start()
+    /*NProgress.start()
 
     return new Promise((resolve, reject) => {
       http.post('me', { email, password }, ({ data }) => {
         resolve(data)
       }, error => reject(error))
-    })
+    })*/
   },
 
   /**
