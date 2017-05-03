@@ -16,7 +16,7 @@ class SynchronizeMedia implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
-     * @var MediaFileInfo
+     * @var SplFileInfo
      */
     public $media;
 
@@ -27,7 +27,7 @@ class SynchronizeMedia implements ShouldQueue
      */
     public function __construct(SplFileInfo $media)
     {
-        $this->media = new MediaFileInfo($media);
+        $this->media = $media;
     }
 
     /**
@@ -37,12 +37,14 @@ class SynchronizeMedia implements ShouldQueue
      */
     public function handle()
     {
+        $media = new MediaFileInfo($this->media);
+
         if ($this->media->isMediaFile()) {
             Song::create([
                 'album_id' => 1,
-                'title' => $this->media->title,
-                'path' => $this->media->getRealPath(),
-                'mtime' => $this->media->getMTime(),
+                'title' => $media->title,
+                'path' => $media->getRealPath(),
+                'mtime' => $media->getMTime(),
             ]);
         }
     }
