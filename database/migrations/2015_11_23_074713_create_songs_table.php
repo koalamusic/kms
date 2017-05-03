@@ -22,7 +22,6 @@ class CreateSongsTable extends Migration
             $table->integer('mtime');
             $table->timestamps();
 
-            $table->primary('id');
             $table->foreign('album_id')->references('id')->on('albums');
         });
     }
