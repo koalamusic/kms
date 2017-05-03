@@ -39,7 +39,7 @@ class SynchronizeMedia implements ShouldQueue
     {
         $media = new MediaFileInfo($this->media);
 
-        if ($this->media->isMediaFile()) {
+        if ($media->isMediaFile()) {
             Song::create([
                 'album_id' => 1,
                 'title' => $media->title,
