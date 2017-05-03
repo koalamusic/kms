@@ -15,7 +15,7 @@ class CreatePlaylistSongTable extends Migration
         Schema::create('playlist_song', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('playlist_id')->unsigned();
-            $table->string('song_id', 32);
+            $table->integer('song_id')->unsigned();
 
             $table->foreign('playlist_id')->references('id')->on('playlists')->onDelete('cascade');
             $table->foreign('song_id')->references('id')->on('songs')->onDelete('cascade');
