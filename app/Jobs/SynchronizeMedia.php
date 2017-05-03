@@ -8,15 +8,14 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
 use SplFileInfo;
 
 class SynchronizeMedia implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable;
 
     /**
-     * @var SplFileInfo
+     * @var MediaFileInfo
      */
     public $media;
 
@@ -27,7 +26,7 @@ class SynchronizeMedia implements ShouldQueue
      */
     public function __construct(SplFileInfo $media)
     {
-        $this->media = $media;
+        $this->media = new MediaFileInfo($media);
     }
 
     /**
@@ -37,14 +36,12 @@ class SynchronizeMedia implements ShouldQueue
      */
     public function handle()
     {
-        $media = new MediaFileInfo($this->media);
-
         if ($this->media->isMediaFile()) {
             Song::create([
                 'album_id' => 1,
-                'title' => $media->title,
-                'path' => $media->getRealPath(),
-                'mtime' => $media->getMTime(),
+                'title' => $this->media->title,
+                'path' => $this->media->getRealPath(),
+                'mtime' => $this->media->getMTime(),
             ]);
         }
     }
