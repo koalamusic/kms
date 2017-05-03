@@ -62,7 +62,7 @@ class Synchronize extends Command
         $bar = $this->output->createProgressBar($mediasToSync->count());
 
         foreach ($mediasToSync as $mediaToSync) {
-            $this->dispatchNow(new SynchronizeMedia($mediaToSync));
+            $this->dispatch(new SynchronizeMedia($mediaToSync));
 
             $bar->advance();
         }
